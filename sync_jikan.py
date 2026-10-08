@@ -1,4 +1,4 @@
-"""Sync anime.csv with the free live Jikan (MyAnimeList) API.
+"""Sync anime.csv with the free live Tenrai (MyAnimeList) API.
 
 The batch DWM pipeline is untouched: this script only refreshes
 ``data/raw/anime.csv`` (same 7 columns) plus an append-only score history.
@@ -73,7 +73,7 @@ def self_test() -> int:
         changed, changes = LF.upsert(pd.read_csv(csv), norm)
         assert changed and set(changes) >= {"genre", "episodes", "rating",
                                             "members"}, changes
-        # invalid Jikan values must never clobber local data
+        # invalid API values must never clobber local data
         bad = {"row": {"anime_id": 1, "name": "X", "genre": "", "type": "XX",
                        "episodes": None, "rating": None, "members": -5},
                "extras": {}}
@@ -105,7 +105,7 @@ def self_test() -> int:
 
 
 def main(argv=None) -> int:
-    ap = argparse.ArgumentParser(description="Refresh anime.csv from Jikan.")
+    ap = argparse.ArgumentParser(description="Refresh anime.csv from Tenrai.")
     src = ap.add_mutually_exclusive_group(required=True)
     src.add_argument("--ids", nargs="+", help="MAL ids, e.g. --ids 1 5 20")
     src.add_argument("--top", type=int, help="top N titles by members")
@@ -118,7 +118,7 @@ def main(argv=None) -> int:
     ap.add_argument("--dry-run", action="store_true",
                     help="select ids only; no network calls, no writes")
     ap.add_argument("--allow-new", action="store_true",
-                    help="append Jikan titles missing from anime.csv")
+                        help="append Tenrai titles missing from anime.csv")
     ap.add_argument("--no-cache", action="store_true",
                     help="ignore cached JSON, refetch everything selected")
     args = ap.parse_args(argv)

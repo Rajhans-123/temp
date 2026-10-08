@@ -69,17 +69,21 @@ MIN_MEMBERS = 50             # drop near-empty anime from modelling
 LIKED_MIN_MEMBERS = 1000     # 10% lift target must be a real recommendation
 
 
-# ------------------------------------------------------- live Jikan feed ----
+# ------------------------------------------------------- live anime feed ----
 # Additive live-feed settings. Nothing in the batch pipeline reads these;
 # `sync_jikan.py` refreshes data/raw/anime.csv, after which build_dataset.py
 # and train.py run exactly as before.
 LIVE_DIR = ROOT / "data" / "live"
-LIVE_CACHE_DIR = LIVE_DIR / "cache"          # raw Jikan JSON per anime_id
+LIVE_CACHE_DIR = LIVE_DIR / "cache"          # raw API JSON per anime_id
 LIVE_HISTORY = LIVE_DIR / "score_history.csv"  # append-only score snapshots
 LIVE_STATE = LIVE_DIR / "last_sync.csv"        # anime_id -> last fetched_at
 LIVE_FIXTURES = LIVE_DIR / "fixtures"
 
-JIKAN_BASE_URL = "https://api.jikan.moe/v4"
+# The public Jikan API was discontinued on 2026-10-01. Tenrai
+# (https://api.tenrai.org) is its drop-in continuation and serves the same
+# Jikan-v4 response shape, so the client, the on-disk JSON cache and
+# normalize() all work unchanged against the v1 base URL below.
+ANIME_API_BASE_URL = "https://api.tenrai.org/v1"
 JIKAN_MIN_INTERVAL = 0.5   # seconds between calls (limit is 3 req/s)
 JIKAN_TIMEOUT = 20         # seconds per request
 JIKAN_MAX_RETRIES = 3      # retries on HTTP 429 / 5xx with backoff

@@ -1,8 +1,8 @@
-"""Weekly retrain driver: Jikan live sync -> rebuild -> retrain -> log.
+"""Weekly retrain driver: Tenrai live sync -> rebuild -> retrain -> log.
 
 Chains the existing pieces without duplicating their logic:
 
-    Jikan API --sync_jikan--> data/raw/anime.csv
+    Tenrai API --sync_jikan--> data/raw/anime.csv
               --build_dataset--> data/processed/*.csv
               --train.py -------> reports/*.csv, models/*.joblib
 
@@ -24,7 +24,7 @@ Robustness rules (CI has no 1 GB ratings.csv and no baskets_user.csv):
 * each train stage runs in isolation - one stage failing (e.g. user-basket
   rules without baskets_user.csv, recommender affinity without ratings.csv)
   is recorded in the log and the remaining stages still run;
-* if Jikan reports fewer than ``--min-changed`` updated titles the expensive
+* if Tenrai reports fewer than ``--min-changed`` updated titles the expensive
   rebuild is skipped (override with ``--force``) so quiet weeks cost nothing.
 """
 from __future__ import annotations
@@ -106,7 +106,7 @@ def run_stages(wanted: list[int]) -> dict:
 
 
 def main(argv=None) -> int:
-    ap = argparse.ArgumentParser(description="Weekly Jikan retrain.")
+    ap = argparse.ArgumentParser(description="Weekly Tenrai retrain.")
     src = ap.add_mutually_exclusive_group()
     src.add_argument("--ids", nargs="+", help="MAL ids, e.g. --ids 1 5 20")
     src.add_argument("--top", type=int, help="top N titles by members")
@@ -122,13 +122,13 @@ def main(argv=None) -> int:
     ap.add_argument("--force", action="store_true",
                     help="retrain even if nothing changed")
     ap.add_argument("--skip-sync", action="store_true",
-                    help="skip Jikan sync, retrain on current CSVs")
+                     help="skip Tenrai sync, retrain on current CSVs")
     ap.add_argument("--dry-run", action="store_true",
                     help="select ids only; no network calls, no writes")
     ap.add_argument("--allow-new", action="store_true",
-                    help="append Jikan titles missing from anime.csv")
+                     help="append Tenrai titles missing from anime.csv")
     ap.add_argument("--no-cache", action="store_true",
-                    help="ignore cached Jikan JSON, refetch everything")
+                     help="ignore cached API JSON, refetch everything")
     args = ap.parse_args(argv)
 
     t0 = time.time()

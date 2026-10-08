@@ -1,11 +1,11 @@
-"""Live Jikan (MyAnimeList) feed: refresh anime.csv without touching DWM logic.
+"""Live anime (MyAnimeList) feed: refresh anime.csv without touching DWM logic.
 
 The batch pipeline (`build_dataset.py` -> `train.py`) only ever reads
 ``data/raw/anime.csv``. This module fetches the same 7-column schema from the
-free Jikan v4 API (no key; ``anime_id`` IS the MAL id, so rows join 1:1),
-upserts changed fields, and appends an append-only score history that later
-becomes the retraining signal. Cleaning, imputation, splits and all six
-mining stages are unchanged - they simply see fresher input.
+free Tenrai v1 API (Jikan-v4-compatible, no key; ``anime_id`` IS the MAL id,
+so rows join 1:1), upserts changed fields, and appends an append-only score
+history that later becomes the retraining signal. Cleaning, imputation, splits
+and all six mining stages are unchanged - they simply see fresher input.
 """
 from __future__ import annotations
 
@@ -30,7 +30,10 @@ def utcnow_iso() -> str:
 
 # ------------------------------------------------------------------ client ---
 class JikanClient:
-    """Minimal stdlib client: polite rate limit, retries, on-disk JSON cache."""
+    """Minimal stdlib client: polite rate limit, retries, on-disk JSON cache.
+
+    (Name is historical: the backend is now Tenrai, the Jikan-v4
+    continuation, which serves the same response shape.)"""
 
     def __init__(self, min_interval: float = C.JIKAN_MIN_INTERVAL,
                  timeout: int = C.JIKAN_TIMEOUT,
@@ -61,7 +64,7 @@ class JikanClient:
                 return payload["data"]
             except (json.JSONDecodeError, KeyError, UnicodeDecodeError):
                 cached.unlink(missing_ok=True)  # corrupt cache: fall to refetch
-        url = f"{C.JIKAN_BASE_URL}/anime/{int(mal_id)}"
+        url = f"{C.ANIME_API_BASE_URL}/anime/{int(mal_id)}"
         last_err: Exception | None = None
         for attempt in range(self.max_retries + 1):
             self._throttle()
@@ -73,7 +76,7 @@ class JikanClient:
             except urllib.error.HTTPError as e:
                 last_err = e
                 if e.code == 404:
-                    raise KeyError(f"Jikan has no anime {mal_id}") from e
+                    raise KeyError(f"API has no anime {mal_id}") from e
                 if e.code in (429,) or 500 <= e.code < 600:
                     time.sleep(2.0 * (attempt + 1))
                     continue
@@ -86,7 +89,7 @@ class JikanClient:
             cached.write_text(json.dumps({"data": payload["data"]},
                                          ensure_ascii=False), encoding="utf-8")
             return payload["data"]
-        raise RuntimeError(f"Jikan fetch failed for {mal_id}: {last_err}")
+        raise RuntimeError(f"API fetch failed for {mal_id}: {last_err}")
 
 
 # -------------------------------------------------------------- normalize ---
@@ -100,7 +103,7 @@ def _names(items) -> list[str]:
 
 
 def normalize(payload: dict) -> dict:
-    """Map a Jikan ``/anime`` object onto the anime.csv 7-column schema.
+    """Map a Tenrai (Jikan-v4) ``/anime`` object onto the anime.csv 7-column schema.
 
     Returns the schema row plus an ``_extras`` dict (score voters, favorites)
     that is stored in the history table, never in anime.csv.
@@ -157,7 +160,7 @@ def _valid(col: str, new) -> bool:
 # ----------------------------------------------------------------- upsert ---
 def upsert(anime: pd.DataFrame, norm: dict, allow_new: bool = False,
            default_name: str | None = None) -> tuple[bool, dict]:
-    """Apply one normalized row. Only valid Jikan values overwrite local data.
+    """Apply one normalized row. Only valid API values overwrite local data.
 
     The local ``name`` is never touched (it is the join key for baskets and
     rules). Unknown ids are appended only with ``allow_new`` (needs a name).

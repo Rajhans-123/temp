@@ -1,4 +1,4 @@
-# Weekly Jikan retrain task helper (Windows Task Scheduler).
+# Weekly Tenrai retrain task helper (Windows Task Scheduler).
 #
 #   powershell -ExecutionPolicy Bypass -File weekly_task.ps1 -Action run
 #   powershell -ExecutionPolicy Bypass -File weekly_task.ps1 -Action install

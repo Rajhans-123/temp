@@ -61,7 +61,7 @@ def kpi(label: str, value, sub: str = "") -> None:
 
 
 def live_feed_status() -> dict:
-    """Summarise the optional Jikan live feed (missing files = never synced)."""
+    """Summarise the optional Tenrai live feed (missing files = never synced)."""
     info: dict = {"synced_titles": 0, "last_sync": None, "snapshots": 0}
     try:
         if C.LIVE_STATE.exists():
@@ -283,11 +283,11 @@ with st.sidebar:
     st.caption("12,294\u00a0titles / 73,515\u00a0users / 7,813,737\u00a0ratings.")
     _live = live_feed_status()
     if _live["synced_titles"]:
-        st.caption(f"Live feed: Jikan v4 API (MyAnimeList) - "
+        st.caption(f"Live feed: Tenrai API (MyAnimeList) - "
                    f"{_live['synced_titles']:,} titles refreshed "
                    f"(last sync {_live['last_sync']}).")
     else:
-        st.caption("Live feed: Jikan v4 API (MyAnimeList) \u2013 fetching live. "
+        st.caption("Live feed: Tenrai API (MyAnimeList) \u2013 fetching live. "
                    "Try the single-title demo in 8 - Live Feed; bulk refresh with "
                    "`python sync_jikan.py --top 200`.")
     st.divider()
@@ -342,7 +342,7 @@ if page == TABS[0]:
     live = live_feed_status()
     if live["synced_titles"]:
         st.success(
-            f"Live feed active - **Jikan v4 API** (live MyAnimeList data): "
+            f"Live feed active - **Tenrai API** (live MyAnimeList data): "
             f"{live['synced_titles']:,} titles refreshed, "
             f"last sync `{live['last_sync']}`, "
             f"{live['snapshots']:,} score snapshots stored. "
@@ -353,8 +353,8 @@ if page == TABS[0]:
         st.info(
             "Static base: Kaggle - CooperUnion (MyAnimeList scrape). "
             "No bulk refresh yet - run `python sync_jikan.py --top 200` to "
-            "pull live scores/members from the free **Jikan v4 API** "
-            "(api.jikan.moe, MyAnimeList data, no key needed), or try a "
+            "pull live scores/members from the free **Tenrai API** "
+            "(api.tenrai.org, MyAnimeList data, no key needed), or try a "
             "single-title live fetch on the **8 - Live Feed** page."
         )
     a, b = cols(2)
@@ -1162,9 +1162,9 @@ if page == TABS[6]:
 
 # ======================================================== 8 LIVE FEED =======
 if page == TABS[7]:
-    st.title("Live Feed - Jikan v4 API (MyAnimeList)")
+    st.title("Live Feed - Tenrai API (MyAnimeList)")
     st.caption("The batch pipeline trains on `data/raw/anime.csv`. The live feed "
-               "refreshes that file from MyAnimeList through the free Jikan API, "
+               "refreshes that file from MyAnimeList through the free Tenrai API "
                "and the weekly retrain rebuilds + retrains on the fresher input. "
                "This page only reads sync state and fetches single live rows - "
                "it never rewrites your data.")
@@ -1215,19 +1215,19 @@ if page == TABS[7]:
         st.info("No snapshots yet - run `python sync_jikan.py --top 200` to pull "
                 "live scores/members, then revisit this tab for the trend.")
 
-    st.subheader("B - Live row demo (fetch one title from Jikan)")
+    st.subheader("B - Live row demo (fetch one title from Tenrai)")
     st.caption("Fetches `GET /anime/{id}`, maps it onto the 7-column anime.csv "
                "schema, and diffs it against your local row. Repeat fetches are "
                "served from the JSON cache under `data/live/cache/` (gitignored).")
     c1, c2 = cols([1, 2])
     mid = c1.number_input("MyAnimeList id", min_value=1, value=1, step=1,
                           help="anime_id IS the MyAnimeList id, so rows join 1:1")
-    nocache = c2.checkbox("ignore JSON cache, refetch from Jikan",
+    nocache = c2.checkbox("ignore JSON cache, refetch from Tenrai",
                           help="bypasses data/live/cache/ for this fetch")
     _cached = (C.LIVE_CACHE_DIR / f"{int(mid)}.json").exists()
     if nocache:
         st.caption("Cache bypassed - this click makes a live network call "
-                   "(~1-3 s normally, up to ~25 s if Jikan is slow). "
+                   "(~1-3 s normally, up to ~25 s if the API is slow). "
                    "Untick for the instant cached read.")
     elif _cached:
         st.caption("Cached locally - this fetch is instant.")
@@ -1235,26 +1235,36 @@ if page == TABS[7]:
         st.caption("Not cached yet - first fetch makes one live network call "
                    "(~1-3 s), then it is cached.")
     if st.button("Fetch live row", type="primary"):
-        # interactive fetch: short timeout + single retry so a slow Jikan
+        # interactive fetch: short timeout + single retry so a slow API
         # fails fast with a warning instead of hanging the spinner.
         _client = LF.JikanClient(timeout=12, max_retries=1)
-        with st.spinner(f"fetching anime {int(mid)} from api.jikan.moe ..."):
+        with st.spinner(f"fetching anime {int(mid)} from api.tenrai.org ..."):
             try:
                 payload = _client.fetch(int(mid), use_cache=not nocache)
                 norm = LF.normalize(payload)
             except Exception as e:  # noqa: BLE001 - show, don't crash the page
-                st.warning(f"Jikan request failed ({type(e).__name__}: {e}). "
+                st.warning(f"API request failed ({type(e).__name__}: {e}). "
                            "Check your connection and retry - nothing was written.")
                 payload, norm = None, None
         if norm is not None:
             local = pd.read_csv(C.RAW_ANIME)
             hit = local[local["anime_id"] == int(mid)]
+
+            def _show(v) -> str:
+                # plain strings only: mixed numpy scalars in an object
+                # column break Arrow serialization in st.dataframe.
+                if v is None or (not isinstance(v, str) and pd.isna(v)):
+                    return "-"
+                if isinstance(v, np.generic):
+                    v = v.item()
+                return str(v)
+
             rows = []
             for f in ("genre", "type", "episodes", "rating", "members"):
                 lv = hit.iloc[0][f] if not hit.empty else "-"
                 rv = norm["row"][f] if norm["row"][f] is not None else "-"
-                rows.append({"field": f, "local anime.csv": lv,
-                             "live Jikan": rv,
+                rows.append({"field": f, "local anime.csv": _show(lv),
+                             "live Tenrai": _show(rv),
                              "would update": "yes" if (not hit.empty and str(lv) != str(rv)
                                                        and LF._valid(f, norm["row"][f])) else "-"})
             st.markdown(f"**{_label(int(mid))}**")
@@ -1271,7 +1281,7 @@ if page == TABS[7]:
                 st.caption(f"Persist with `python sync_jikan.py --ids {int(mid)}`, "
                            "then `python build_dataset.py && python train.py` - or "
                            f"`python retrain_weekly.py --ids {int(mid)}` for all three steps.")
-            with st.expander("raw Jikan payload (trimmed)"):
+            with st.expander("raw API payload (trimmed)"):
                 trim = {k: payload.get(k) for k in
                         ("mal_id", "title", "title_english", "type", "episodes",
                          "status", "score", "scored_by", "members", "favorites",

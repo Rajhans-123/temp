@@ -260,7 +260,7 @@ processed tables.
 The app's **8 - Live Feed** tab is the UI demo for this feed: sync status KPIs
 (last sync, snapshot count, last weekly run), the per-title score/member trend
 from `data/live/score_history.csv`, and a single-title live fetch that diffs
-the Jikan row against the local `anime.csv` row (read-only; persisting is done
+the Tenrai row against the local `anime.csv` row (read-only; persisting is done
 via the CLI commands shown on the tab).
 
 ---
@@ -305,11 +305,13 @@ models/                trained joblib artefacts
 * `smoke_test.py` executes the entire UI headlessly and drives the interactive
   paths, so a broken widget fails before deployment rather than in the browser.
 
-## 8. Live feed (Jikan) - optional, additive
+## 8. Live feed (Tenrai) - optional, additive
 
-`sync_jikan.py` refreshes `data/raw/anime.csv` from the free Jikan v4 API
-(no key; `anime_id` IS the MyAnimeList id, so rows join 1:1). The batch
-pipeline is untouched - run sync first, then the usual build + train:
+`sync_jikan.py` refreshes `data/raw/anime.csv` from the free Tenrai v1 API
+(Jikan-compatible, no key; `anime_id` IS the MyAnimeList id, so rows join 1:1).
+Tenrai is used because the public Jikan API was discontinued on 2026-10-01;
+it serves the same response shape, so the client and cache work unchanged.
+The batch pipeline is untouched - run sync first, then the usual build + train:
 
 ```bash
 python sync_jikan.py --self-test     # offline check, no network
@@ -320,12 +322,12 @@ python build_dataset.py && python train.py
 ```
 
 Rules that protect the DWM logic: local `name` is never overwritten (it is
-the join key for baskets and rules); only sane Jikan values overwrite
+the join key for baskets and rules); only sane API values overwrite
 (`episodes > 0`, `0 < rating <= 10`, known `type`, non-empty `genre`);
 unknown ids are skipped unless `--allow-new`; every run writes
 `data/live/score_history.csv` (append-only snapshots for retraining) and
 `data/live/last_sync.csv`, keeps one `.bak` of anime.csv, and respects the
-3 req/s Jikan limit with retries + a JSON cache under `data/live/cache/`.
+3 req/s API limit with retries + a JSON cache under `data/live/cache/`.
 
 ### Weekly retrain
 
