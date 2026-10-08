@@ -1,0 +1,127 @@
+﻿ * Serving Flask app 'app'
+ * Debug mode: off
+python : WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server 
+instead.
+At line:1 char:158
++ ... .py db.py demo.py; if ($?) { "LINT OK" }; python demo.py 2>&1 | Out-F ...
++                                               ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (WARNING: This i...server instead.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ * Running on http://127.0.0.1:5055
+Press CTRL+C to quit
+127.0.0.1 - - [29/Sep/2026 13:04:46] "GET /api/health HTTP/1.1" 200 -
+127.0.0.1 - - [29/Sep/2026 13:04:46] "GET /api/health HTTP/1.1" 200 -
+127.0.0.1 - - [29/Sep/2026 13:04:46] "GET /api/books?per_page=3&page=1 HTTP/1.1" 200 -
+127.0.0.1 - - [29/Sep/2026 13:04:46] "GET /api/books?q=Martin HTTP/1.1" 200 -
+127.0.0.1 - - [29/Sep/2026 13:04:46] "GET /api/books?genre=database HTTP/1.1" 200 -
+127.0.0.1 - - [29/Sep/2026 13:04:46] "GET /api/books/1 HTTP/1.1" 200 -
+127.0.0.1 - - [29/Sep/2026 13:04:46] "GET /api/books/9999 HTTP/1.1" 404 -
+127.0.0.1 - - [29/Sep/2026 13:04:47] "POST /api/auth/register HTTP/1.1" 201 -
+127.0.0.1 - - [29/Sep/2026 13:04:47] "POST /api/auth/register HTTP/1.1" 201 -
+127.0.0.1 - - [29/Sep/2026 13:04:47] "POST /api/auth/register HTTP/1.1" 400 -
+127.0.0.1 - - [29/Sep/2026 13:04:47] "POST /api/auth/register HTTP/1.1" 409 -
+127.0.0.1 - - [29/Sep/2026 13:04:47] "POST /api/auth/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Sep/2026 13:04:47] "POST /api/auth/login HTTP/1.1" 200 -
+127.0.0.1 - - [29/Sep/2026 13:04:47] "POST /api/auth/login HTTP/1.1" 401 -
+127.0.0.1 - - [29/Sep/2026 13:04:47] "GET /api/auth/me HTTP/1.1" 200 -
+127.0.0.1 - - [29/Sep/2026 13:04:47] "GET /api/auth/me HTTP/1.1" 401 -
+[2026-09-29 13:04:47,570] ERROR in app: Exception on /api/auth/me [GET]
+Traceback (most recent call last):
+  File "C:\Users\deeks\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\deeks\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 919, in 
+full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\deeks\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 917, in 
+full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\deeks\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 902, in 
+dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\deeks\OneDrive\Documents\Default Project\assignments\10_rest_api_auth\auth.py", line 108, in wrapper
+    payload = decode_token(header[7:].strip())
+  File "C:\Users\deeks\OneDrive\Documents\Default Project\assignments\10_rest_api_auth\auth.py", line 88, in 
+decode_token
+    if not hmac.compare_digest(_unb64(signature), expected):
+                               ~~~~~~^^^^^^^^^^^
+  File "C:\Users\deeks\OneDrive\Documents\Default Project\assignments\10_rest_api_auth\auth.py", line 55, in _unb64
+    return base64.urlsafe_b64decode(text + "=" * (-len(text) % 4))
+           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\deeks\AppData\Local\Programs\Python\Python313\Lib\base64.py", line 134, in urlsafe_b64decode
+    return b64decode(s)
+  File "C:\Users\deeks\AppData\Local\Programs\Python\Python313\Lib\base64.py", line 88, in b64decode
+    return binascii.a2b_base64(s, strict_mode=validate)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+binascii.Error: Invalid base64-encoded string: number of data characters (5) cannot be 1 more than a multiple of 4
+127.0.0.1 - - [29/Sep/2026 13:04:47] "GET /api/auth/me HTTP/1.1" 500 -
+[1m==============================================================================
+  ASSIGNMENT 10 - RESTFUL API WITH AUTHENTICATION AND AUTHORISATION
+==============================================================================[0m
+  base url : http://127.0.0.1:5055
+  database : C:\Users\deeks\OneDrive\Documents\Default Project\assignments\10_rest_api_auth\library.db
+
+[1m==============================================================================
+  1. PUBLIC ENDPOINTS - no token required
+==============================================================================[0m
+    health check                       GET    /api/health                            [92m200[0m  ok
+    list books (paged)                 GET    /api/books?per_page=3                  [92m200[0m  page 1 of total 6
+          1  Clean Code                             software
+          4  Database System Concepts               database
+          2  Designing Data-Intensive Applications  software
+    search 'Martin'                    GET    /api/books?q=Martin                    [92m200[0m  3 match(es)
+    filter genre=database              GET    /api/books?genre=database              [92m200[0m  2 match(es)
+    get book 1                         GET    /api/books/1                           [92m200[0m  Clean Code
+    get missing book                   GET    /api/books/9999                        [93m404[0m  no book with id 9999
+
+[1m==============================================================================
+  2. REGISTRATION AND LOGIN - authentication
+==============================================================================[0m
+    register alice                     POST   /api/auth/register                     [92m201[0m  id=2 role=user
+    register bob                       POST   /api/auth/register                     [92m201[0m  id=3
+    username too short                 POST   /api/auth/register                     [93m400[0m  username must be at least 3 characters
+    duplicate username                 POST   /api/auth/register                     [93m409[0m  409 conflict
+    login alice (user)                 POST   /api/auth/login                        [92m200[0m  role=user expires_in=3600s
+    login admin                        POST   /api/auth/login                        [92m200[0m  role=admin
+    login wrong password               POST   /api/auth/login                        [93m401[0m  invalid username or password
+
+  JWT anatomy (header.payload.signature):
+      header     {
+                   "alg": "HS256",
+                   "typ": "JWT"
+                 }
+      payload    {
+                   "sub": "2",
+                   "username": "alice",
+                   "role": "user",
+                   "iat": 1790667287,
+                   "exp": 1790670887,
+                   "jti": "cfda9abed2c1600b"
+                 }
+      signature  9maf7lxxqqPBn4Xj9gLD9Vs6HBGwW7eUpLct-Xyq-I0
+
+[1m==============================================================================
+  3. AUTHORISATION - who may do what
+==============================================================================[0m
+    me (user token)                    GET    /api/auth/me                           [92m200[0m  role=user
+    me without token                   GET    /api/auth/me                           [93m401[0m  401 - no credentials
+Traceback (most recent call last):
+  File "C:\Users\deeks\OneDrive\Documents\Default Project\assignments\10_rest_api_auth\demo.py", line 212, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\deeks\OneDrive\Documents\Default Project\assignments\10_rest_api_auth\demo.py", line 148, in main
+    s, p = call("GET", "/api/auth/me", token="not.a.token")
+           ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\deeks\OneDrive\Documents\Default Project\assignments\10_rest_api_auth\demo.py", line 64, in call
+    return err.code, (json.loads(raw) if raw else {})
+                      ~~~~~~~~~~^^^^^
+  File "C:\Users\deeks\AppData\Local\Programs\Python\Python313\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "C:\Users\deeks\AppData\Local\Programs\Python\Python313\Lib\json\decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\deeks\AppData\Local\Programs\Python\Python313\Lib\json\decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)

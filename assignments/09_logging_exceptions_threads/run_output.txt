@@ -1,0 +1,108 @@
+﻿==========================================================================
+  ASSIGNMENT 9 - LOGGING, CUSTOM EXCEPTIONS, THREAD SAFE FILES
+==========================================================================
+
+==========================================================================
+  1. LOGGING SYSTEM - one message at every level
+==========================================================================
+13:02:57 INFO     | logging system ready, level=10
+13:02:57 INFO     | INFO     - 3 records written to output/records.csv
+13:02:57 WARNING  | WARNING  - retrying upload, attempt 2 of 3
+13:02:57 ERROR    | ERROR    - record 7 could not be parsed as an integer
+13:02:57 CRITICAL | CRITICAL - database unreachable, shutting the worker down
+
+  Files created:
+    debug.log      6 lines   (keeps: everything)
+    app.log        5 lines   (keeps: INFO and above)
+
+  Tail of logs/debug.log:
+    2026-09-29 13:02:57 | DEBUG    | app                | DEBUG    - cache miss for key 'user:42', falling back to disk
+    2026-09-29 13:02:57 | INFO     | app                | INFO     - 3 records written to output/records.csv
+    2026-09-29 13:02:57 | WARNING  | app                | WARNING  - retrying upload, attempt 2 of 3
+    2026-09-29 13:02:57 | ERROR    | app                | ERROR    - record 7 could not be parsed as an integer
+    2026-09-29 13:02:57 | CRITICAL | app                | CRITICAL - database unreachable, shutting the worker down
+
+==========================================================================
+  2. CUSTOM EXCEPTION CLASS - exception cleaning
+==========================================================================
+
+  2a. Custom exception hierarchy
+    AppError           code=APP_ERROR          check the input you supplied
+    ValidationError    code=VALIDATION_ERROR   one or more fields are invalid
+    StorageError       code=STORAGE_ERROR      the file could not be read or written
+    ProcessingError    code=PROCESSING_ERROR   a work item failed while being processed
+
+  2b. Happy path - validated and stored
+13:02:57 INFO     | stored record Attack on Titan (score=9)
+13:02:57 INFO     | stored record Steins;Gate (score=8)
+    stored 2 records, file = output/records.csv
+
+  2c. Exception cleaning in action
+    input                              -> clean result
+    ------------------------------------------------------------------
+13:02:57 ERROR    | save failed: [VALIDATION_ERROR] saving record: score for 'Cowboy Bebop' is 'nine', not an int
+    score = 'nine'  (wrong type)         -> VALIDATION_ERROR
+                                            message: saving record: score for 'Cowboy Bebop' is 'nine', not an int
+                                            cause  : ValueError: score for 'Cowboy Bebop' is 'nine', not an int
+13:02:57 ERROR    | save failed: [VALIDATION_ERROR] saving record: score 42 for 'Cowboy Bebop' is outside 0-10
+    score = 42      (out of range)       -> VALIDATION_ERROR
+                                            message: saving record: score 42 for 'Cowboy Bebop' is outside 0-10
+                                            cause  : ValueError: score 42 for 'Cowboy Bebop' is outside 0-10
+13:02:57 ERROR    | load failed: [STORAGE_ERROR] loading records: file not found
+    load() with no file on disk          -> STORAGE_ERROR
+                                            message: loading records: file not found
+                                            cause  : FileNotFoundError: C:\Users\deeks\OneDrive\Documents\Default Project\assignments\09_logging_exceptions_threads\output\never_written.csv does not exist yet
+13:02:57 ERROR    | crash failed: [PROCESSING_ERROR] crashing worker: unexpected ZeroDivisionError
+    crash() -> ZeroDivisionError         -> PROCESSING_ERROR
+                                            message: crashing worker: unexpected ZeroDivisionError
+                                            cause  : ZeroDivisionError: division by zero
+
+  2d. Exception chaining (__cause__) + cleanup
+    traceback stored in logs/app.log, not shown to the user:
+13:02:57 ERROR    | crash failed: [PROCESSING_ERROR] crashing worker: unexpected ZeroDivisionError
+      caught PROCESSING_ERROR, chained from ZeroDivisionError
+    temp files left behind after the failures: 0 (TempFile cleaned up)
+    records file still intact: True with 2 records
+
+  2e. The user-friendly message vs the machine-readable one
+      friendly  : [VALIDATION_ERROR] score must be an integer
+      machine   : {'error': 'VALIDATION_ERROR', 'message': 'score must be an integer', 'details': {'name': 'Cowboy Bebop'}}
+
+==========================================================================
+  3. THREAD SAFE FILE ACCESS
+==========================================================================
+
+  3a. 8 threads x 40 lines, WITHOUT a lock
+      expected 320 lines, file has 201 lines -> 119 lost to the race
+13:02:57 WARNING  | unsafe write lost 119 of 320 lines
+
+  3b. Same work WITH the lock + atomic replace
+      8 threads finished in 0.150s
+      expected 320 lines, file has 320 lines -> 0 lost, no corruption
+      concurrent.txt: 320 lines, 6080 bytes
+13:02:57 INFO     | 8 threads wrote 320 lines with no corruption
+
+  3c. First 6 lines as written (note the interleaved thread ids):
+      worker-1 line 000
+      worker-2 line 000
+      worker-3 line 000
+      worker-4 line 000
+      worker-1 line 001
+      worker-5 line 000
+
+  3d. Atomic write - readers never see a partial file
+      after write_atomic(100 lines) -> file reports 100 lines, no truncation
+      after write_atomic(250 lines) -> file reports 250 lines, no truncation
+      after write_atomic(500 lines) -> file reports 500 lines, no truncation
+
+  3e. Batched append - one lock acquisition for many lines
+      concurrent.txt: 510 lines, 9480 bytes
+
+  Output files in output/:
+    concurrent.txt           9480 bytes
+    records.csv                15 bytes
+    unsafe.txt               3417 bytes
+
+==========================================================================
+  DONE - see logs/debug.log, logs/app.log and output/
+==========================================================================

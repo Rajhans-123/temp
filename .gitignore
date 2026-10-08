@@ -1,0 +1,16 @@
+# The 1 GB raw ratings file and the intermediate baskets are regenerable with
+# `python build_dataset.py`; keep them out of version control and out of the
+# deployment bundle.
+data/raw/ratings.csv
+data/processed/baskets_user.csv
+data/live/cache/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Streamlit
+.streamlit/secrets.toml

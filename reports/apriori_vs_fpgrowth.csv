@@ -1,0 +1,5 @@
+min_support,n_transactions,apriori_itemsets,fpgrowth_itemsets,apriori_sec,fpgrowth_sec,speedup
+0.02,5501,202,202,0.069,0.161,0.43
+0.03,5501,112,112,0.0384,0.1435,0.27
+0.05,5501,41,41,0.0161,0.1243,0.13
+0.08,5501,22,22,0.0126,0.12,0.11

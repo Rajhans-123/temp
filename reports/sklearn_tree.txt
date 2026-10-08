@@ -1,0 +1,331 @@
+|--- members <= 2553.50
+|   |--- episodes <= 15.50
+|   |   |--- members <= 1021.00
+|   |   |   |--- genre_count <= 2.50
+|   |   |   |   |--- primary_genre <= 10.00
+|   |   |   |   |   |--- primary_genre <= 5.50
+|   |   |   |   |   |   |--- primary_genre <= 3.50
+|   |   |   |   |   |   |   |--- class: Low
+|   |   |   |   |   |   |--- primary_genre >  3.50
+|   |   |   |   |   |   |   |--- class: Low
+|   |   |   |   |   |--- primary_genre >  5.50
+|   |   |   |   |   |   |--- primary_genre <= 6.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- primary_genre >  6.50
+|   |   |   |   |   |   |   |--- class: Low
+|   |   |   |   |--- primary_genre >  10.00
+|   |   |   |   |   |--- members <= 79.50
+|   |   |   |   |   |   |--- type <= 0.50
+|   |   |   |   |   |   |   |--- class: Low
+|   |   |   |   |   |   |--- type >  0.50
+|   |   |   |   |   |   |   |--- class: Low
+|   |   |   |   |   |--- members >  79.50
+|   |   |   |   |   |   |--- type <= 3.50
+|   |   |   |   |   |   |   |--- class: Low
+|   |   |   |   |   |   |--- type >  3.50
+|   |   |   |   |   |   |   |--- class: Low
+|   |   |   |--- genre_count >  2.50
+|   |   |   |   |--- members <= 195.50
+|   |   |   |   |   |--- is_seinen <= 0.50
+|   |   |   |   |   |   |--- members <= 85.50
+|   |   |   |   |   |   |   |--- class: Low
+|   |   |   |   |   |   |--- members >  85.50
+|   |   |   |   |   |   |   |--- class: Low
+|   |   |   |   |   |--- is_seinen >  0.50
+|   |   |   |   |   |   |--- members <= 129.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- members >  129.50
+|   |   |   |   |   |   |   |--- class: Low
+|   |   |   |   |--- members >  195.50
+|   |   |   |   |   |--- type <= 0.50
+|   |   |   |   |   |   |--- members <= 463.00
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- members >  463.00
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |--- type >  0.50
+|   |   |   |   |   |   |--- type <= 3.50
+|   |   |   |   |   |   |   |--- class: Low
+|   |   |   |   |   |   |--- type >  3.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |--- members >  1021.00
+|   |   |   |--- type <= 0.50
+|   |   |   |   |--- genre_count <= 2.50
+|   |   |   |   |   |--- members <= 1151.50
+|   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |--- members >  1151.50
+|   |   |   |   |   |   |--- primary_genre <= 9.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- primary_genre >  9.50
+|   |   |   |   |   |   |   |--- class: Low
+|   |   |   |   |--- genre_count >  2.50
+|   |   |   |   |   |--- primary_genre <= 0.50
+|   |   |   |   |   |   |--- members <= 2056.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- members >  2056.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |--- primary_genre >  0.50
+|   |   |   |   |   |   |--- genre_count <= 4.50
+|   |   |   |   |   |   |   |--- class: High
+|   |   |   |   |   |   |--- genre_count >  4.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |--- type >  0.50
+|   |   |   |   |--- members <= 1505.50
+|   |   |   |   |   |--- primary_genre <= 7.50
+|   |   |   |   |   |   |--- is_shounen <= 0.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- is_shounen >  0.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |--- primary_genre >  7.50
+|   |   |   |   |   |   |--- primary_genre <= 14.50
+|   |   |   |   |   |   |   |--- class: Low
+|   |   |   |   |   |   |--- primary_genre >  14.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |--- members >  1505.50
+|   |   |   |   |   |--- primary_genre <= 6.50
+|   |   |   |   |   |   |--- genre_count <= 2.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- genre_count >  2.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |--- primary_genre >  6.50
+|   |   |   |   |   |   |--- episodes_band <= 3.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- episodes_band >  3.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |--- episodes >  15.50
+|   |   |--- members <= 358.00
+|   |   |   |--- members <= 94.50
+|   |   |   |   |--- members <= 87.50
+|   |   |   |   |   |--- episodes_band <= 1.50
+|   |   |   |   |   |   |--- episodes <= 43.00
+|   |   |   |   |   |   |   |--- class: Low
+|   |   |   |   |   |   |--- episodes >  43.00
+|   |   |   |   |   |   |   |--- class: Low
+|   |   |   |   |   |--- episodes_band >  1.50
+|   |   |   |   |   |   |--- genre_count <= 2.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- genre_count >  2.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |--- members >  87.50
+|   |   |   |   |   |--- class: Low
+|   |   |   |--- members >  94.50
+|   |   |   |   |--- genre_count <= 2.50
+|   |   |   |   |   |--- primary_genre <= 7.00
+|   |   |   |   |   |   |--- members <= 124.50
+|   |   |   |   |   |   |   |--- class: Low
+|   |   |   |   |   |   |--- members >  124.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |--- primary_genre >  7.00
+|   |   |   |   |   |   |--- episodes_band <= 0.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- episodes_band >  0.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |--- genre_count >  2.50
+|   |   |   |   |   |--- members <= 199.50
+|   |   |   |   |   |   |--- members <= 162.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- members >  162.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |--- members >  199.50
+|   |   |   |   |   |   |--- episodes <= 49.00
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- episodes >  49.00
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |--- members >  358.00
+|   |   |   |--- members <= 768.00
+|   |   |   |   |--- primary_genre <= 17.00
+|   |   |   |   |   |--- primary_genre <= 1.50
+|   |   |   |   |   |   |--- primary_genre <= 0.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- primary_genre >  0.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |--- primary_genre >  1.50
+|   |   |   |   |   |   |--- members <= 414.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- members >  414.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |--- primary_genre >  17.00
+|   |   |   |   |   |--- class: High
+|   |   |   |--- members >  768.00
+|   |   |   |   |--- genre_count <= 2.50
+|   |   |   |   |   |--- primary_genre <= 2.00
+|   |   |   |   |   |   |--- members <= 1268.50
+|   |   |   |   |   |   |   |--- class: High
+|   |   |   |   |   |   |--- members >  1268.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |--- primary_genre >  2.00
+|   |   |   |   |   |   |--- episodes <= 38.50
+|   |   |   |   |   |   |   |--- class: High
+|   |   |   |   |   |   |--- episodes >  38.50
+|   |   |   |   |   |   |   |--- class: High
+|   |   |   |   |--- genre_count >  2.50
+|   |   |   |   |   |--- episodes <= 36.00
+|   |   |   |   |   |   |--- primary_genre <= 0.50
+|   |   |   |   |   |   |   |--- class: High
+|   |   |   |   |   |   |--- primary_genre >  0.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |--- episodes >  36.00
+|   |   |   |   |   |   |--- members <= 866.00
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- members >  866.00
+|   |   |   |   |   |   |   |--- class: High
+|--- members >  2553.50
+|   |--- members <= 20055.00
+|   |   |--- members <= 5826.00
+|   |   |   |--- type <= 0.50
+|   |   |   |   |--- members <= 2736.50
+|   |   |   |   |   |--- class: High
+|   |   |   |   |--- members >  2736.50
+|   |   |   |   |   |--- members <= 3709.00
+|   |   |   |   |   |   |--- members <= 2938.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- members >  2938.50
+|   |   |   |   |   |   |   |--- class: High
+|   |   |   |   |   |--- members >  3709.00
+|   |   |   |   |   |   |--- members <= 4192.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- members >  4192.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |--- type >  0.50
+|   |   |   |   |--- episodes <= 13.50
+|   |   |   |   |   |--- members <= 2959.50
+|   |   |   |   |   |   |--- primary_genre <= 14.00
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- primary_genre >  14.00
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |--- members >  2959.50
+|   |   |   |   |   |   |--- is_shounen <= 0.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- is_shounen >  0.50
+|   |   |   |   |   |   |   |--- class: High
+|   |   |   |   |--- episodes >  13.50
+|   |   |   |   |   |--- primary_genre <= 0.50
+|   |   |   |   |   |   |--- members <= 3478.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- members >  3478.50
+|   |   |   |   |   |   |   |--- class: High
+|   |   |   |   |   |--- primary_genre >  0.50
+|   |   |   |   |   |   |--- members <= 2900.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |   |--- members >  2900.50
+|   |   |   |   |   |   |   |--- class: High
+|   |   |--- members >  5826.00
+|   |   |   |--- type <= 1.50
+|   |   |   |   |--- members <= 9015.50
+|   |   |   |   |   |--- primary_genre <= 2.00
+|   |   |   |   |   |   |--- members <= 6961.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |   |--- members >  6961.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |--- primary_genre >  2.00
+|   |   |   |   |   |   |--- genre_count <= 3.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |   |--- genre_count >  3.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |--- members >  9015.50
+|   |   |   |   |   |--- primary_genre <= 0.50
+|   |   |   |   |   |   |--- members <= 15464.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |   |--- members >  15464.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |--- primary_genre >  0.50
+|   |   |   |   |   |   |--- genre_count <= 4.50
+|   |   |   |   |   |   |   |--- class: High
+|   |   |   |   |   |   |--- genre_count >  4.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |--- type >  1.50
+|   |   |   |   |--- episodes <= 27.50
+|   |   |   |   |   |--- is_shounen <= 0.50
+|   |   |   |   |   |   |--- episodes <= 13.50
+|   |   |   |   |   |   |   |--- class: High
+|   |   |   |   |   |   |--- episodes >  13.50
+|   |   |   |   |   |   |   |--- class: High
+|   |   |   |   |   |--- is_shounen >  0.50
+|   |   |   |   |   |   |--- type <= 4.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |   |--- type >  4.50
+|   |   |   |   |   |   |   |--- class: High
+|   |   |   |   |--- episodes >  27.50
+|   |   |   |   |   |--- episodes <= 76.50
+|   |   |   |   |   |   |--- episodes <= 50.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |   |--- episodes >  50.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |--- episodes >  76.50
+|   |   |   |   |   |   |--- class: Top
+|   |--- members >  20055.00
+|   |   |--- members <= 76575.50
+|   |   |   |--- episodes <= 6.50
+|   |   |   |   |--- primary_genre <= 10.50
+|   |   |   |   |   |--- is_shounen <= 0.50
+|   |   |   |   |   |   |--- members <= 40338.00
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |   |--- members >  40338.00
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |--- is_shounen >  0.50
+|   |   |   |   |   |   |--- episodes <= 2.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |   |--- episodes >  2.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |--- primary_genre >  10.50
+|   |   |   |   |   |--- type <= 2.50
+|   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |--- type >  2.50
+|   |   |   |   |   |   |--- primary_genre <= 13.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |   |--- primary_genre >  13.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |--- episodes >  6.50
+|   |   |   |   |--- episodes_band <= 2.50
+|   |   |   |   |   |--- episodes <= 24.50
+|   |   |   |   |   |   |--- genre_count <= 2.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |   |--- genre_count >  2.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |--- episodes >  24.50
+|   |   |   |   |   |   |--- members <= 50678.00
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |   |--- members >  50678.00
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |--- episodes_band >  2.50
+|   |   |   |   |   |--- episodes <= 11.50
+|   |   |   |   |   |   |--- genre_count <= 2.50
+|   |   |   |   |   |   |   |--- class: Medium
+|   |   |   |   |   |   |--- genre_count >  2.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |--- episodes >  11.50
+|   |   |   |   |   |   |--- members <= 38013.00
+|   |   |   |   |   |   |   |--- class: High
+|   |   |   |   |   |   |--- members >  38013.00
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |--- members >  76575.50
+|   |   |   |--- members <= 174434.00
+|   |   |   |   |--- genre_count <= 5.50
+|   |   |   |   |   |--- type <= 2.50
+|   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |--- type >  2.50
+|   |   |   |   |   |   |--- episodes <= 13.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |   |--- episodes >  13.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |--- genre_count >  5.50
+|   |   |   |   |   |--- episodes <= 24.50
+|   |   |   |   |   |   |--- episodes <= 10.50
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |   |--- episodes >  10.50
+|   |   |   |   |   |   |   |--- class: High
+|   |   |   |   |   |--- episodes >  24.50
+|   |   |   |   |   |   |--- class: Top
+|   |   |   |--- members >  174434.00
+|   |   |   |   |--- episodes <= 14.50
+|   |   |   |   |   |--- members <= 299356.00
+|   |   |   |   |   |   |--- members <= 192576.00
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |   |--- members >  192576.00
+|   |   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |--- members >  299356.00
+|   |   |   |   |   |   |--- class: Top
+|   |   |   |   |--- episodes >  14.50
+|   |   |   |   |   |--- genre_count <= 6.50
+|   |   |   |   |   |   |--- class: Top
+|   |   |   |   |   |--- genre_count >  6.50
+|   |   |   |   |   |   |--- class: Top

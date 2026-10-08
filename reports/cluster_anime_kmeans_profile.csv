@@ -1,0 +1,5 @@
+cluster,n,share_%,members_log,episodes_log,rating,genre_count,is_shounen,is_multi_genre,top_name,top_type,segment_name
+0,2864,23.3,6.319,1.27,5.916,0.978,0.003,0.0,Saru Kani Gassen (2) | Tsumiki no Ie (1) | Karigurashi no Arrietty (1),OVA | Movie,niche / poorly rated / short-form
+1,3771,30.67,9.409,2.248,7.181,3.959,0.0,1.0,Kimi no Na wa. (1) | Steins;Gate (1) | Ginga Eiyuu Densetsu (1),TV | OVA,blockbuster / acclaimed / long-form
+2,1735,14.11,8.704,1.991,7.102,4.597,1.0,0.999,Fullmetal Alchemist: Brotherhood (1) | Gintama° (1) | Gintama&#039; (1),TV | OVA,mid-reach / solid / mid-length
+3,3924,31.92,5.762,1.253,5.932,2.696,0.008,1.0,"Shi Wan Ge Leng Xiaohua (2) | Ie Naki Ko Remi Specials (1) | Momoko, Kaeru no Uta ga Kikoeru yo. (1)",OVA | Movie,niche / poorly rated / short-form (variant 2)

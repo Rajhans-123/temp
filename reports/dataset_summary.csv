@@ -1,0 +1,4 @@
+table,rows,description
+anime_clean,12294,cleaned + feature-engineered anime master
+anime_rating_stats,9927,per-anime aggregated user ratings
+user_features,69600,per-user behavioural profile (clustering dataset B)

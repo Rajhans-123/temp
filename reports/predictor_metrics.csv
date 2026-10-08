@@ -1,0 +1,5 @@
+split,model,MAE,RMSE,R2,MAPE_%
+test,BLEND 0.42*RF + 0.58*GB,0.4812,0.6531,0.5973,8.12
+test,Gradient Boosting,0.4823,0.6535,0.5968,8.141
+test,Random Forest,0.4909,0.667,0.58,8.274
+validation (weight fitting only),BLEND 0.42*RF + 0.58*GB,0.4714,0.649,0.5643,7.982

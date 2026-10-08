@@ -1,0 +1,443 @@
+metric,value
+stage6.predictor[0].split,test
+stage6.predictor[0].model,BLEND 0.42*RF + 0.58*GB
+stage6.predictor[0].MAE,0.4812
+stage6.predictor[0].RMSE,0.6531
+stage6.predictor[0].R2,0.5973
+stage6.predictor[0].MAPE_%,8.12
+stage6.predictor[1].split,test
+stage6.predictor[1].model,Gradient Boosting
+stage6.predictor[1].MAE,0.4823
+stage6.predictor[1].RMSE,0.6535
+stage6.predictor[1].R2,0.5968
+stage6.predictor[1].MAPE_%,8.141
+stage6.predictor[2].split,test
+stage6.predictor[2].model,Random Forest
+stage6.predictor[2].MAE,0.4909
+stage6.predictor[2].RMSE,0.667
+stage6.predictor[2].R2,0.58
+stage6.predictor[2].MAPE_%,8.274
+stage6.predictor[3].split,validation (weight fitting only)
+stage6.predictor[3].model,BLEND 0.42*RF + 0.58*GB
+stage6.predictor[3].MAE,0.4714
+stage6.predictor[3].RMSE,0.649
+stage6.predictor[3].R2,0.5643
+stage6.predictor[3].MAPE_%,7.982
+stage6.best,BLEND 0.42*RF + 0.58*GB
+stage6.blend[0],0.42
+stage6.blend[1],0.58
+stage6.sigma,0.6531
+stage6.r2_full,0.6807
+stage6.recommender.n_anime,6941
+stage6.recommender.n_users,47153
+stage6.recommender.k,5
+stage6.recommender.genres,188
+stage6.recommender.rules,33
+stage2.genre_rules,18
+stage2.user_rules,33
+stage2.best_genre_lift,2.66875
+stage2.best_user_lift,7.95952
+stage3.j48.accuracy,0.5595
+stage3.j48.precision_macro,0.5344
+stage3.j48.recall_macro,0.5389
+stage3.j48.f1_macro,0.5291
+stage3.j48.confusion_matrix,"[[102  33 186 149]
+ [ 14 513 172  14]
+ [ 57 183 383  78]
+ [ 89  17  56 333]]"
+stage3.j48.classes[0],High
+stage3.j48.classes[1],Low
+stage3.j48.classes[2],Medium
+stage3.j48.classes[3],Top
+stage3.j48.report.High.precision,0.389313
+stage3.j48.report.High.recall,0.217021
+stage3.j48.report.High.f1-score,0.278689
+stage3.j48.report.High.support,470.0
+stage3.j48.report.Low.precision,0.687668
+stage3.j48.report.Low.recall,0.719495
+stage3.j48.report.Low.f1-score,0.703221
+stage3.j48.report.Low.support,713.0
+stage3.j48.report.Medium.precision,0.480552
+stage3.j48.report.Medium.recall,0.546362
+stage3.j48.report.Medium.f1-score,0.511348
+stage3.j48.report.Medium.support,701.0
+stage3.j48.report.Top.precision,0.580139
+stage3.j48.report.Top.recall,0.672727
+stage3.j48.report.Top.f1-score,0.623012
+stage3.j48.report.Top.support,495.0
+stage3.j48.report.accuracy,0.559479
+stage3.j48.report.macro avg.precision,0.534418
+stage3.j48.report.macro avg.recall,0.538901
+stage3.j48.report.macro avg.f1-score,0.529068
+stage3.j48.report.macro avg.support,2379.0
+stage3.j48.report.weighted avg.precision,0.545322
+stage3.j48.report.weighted avg.recall,0.559479
+stage3.j48.report.weighted avg.f1-score,0.546123
+stage3.j48.report.weighted avg.support,2379.0
+stage3.gaussian_nb.accuracy,0.4758
+stage3.gaussian_nb.precision_macro,0.4557
+stage3.gaussian_nb.recall_macro,0.4591
+stage3.gaussian_nb.f1_macro,0.4396
+stage3.gaussian_nb.confusion_matrix,"[[115 135 142  78]
+ [ 19 602  68  24]
+ [ 77 404 153  67]
+ [108  49  76 262]]"
+stage3.gaussian_nb.classes[0],High
+stage3.gaussian_nb.classes[1],Low
+stage3.gaussian_nb.classes[2],Medium
+stage3.gaussian_nb.classes[3],Top
+stage3.gaussian_nb.report.High.precision,0.360502
+stage3.gaussian_nb.report.High.recall,0.244681
+stage3.gaussian_nb.report.High.f1-score,0.291508
+stage3.gaussian_nb.report.High.support,470.0
+stage3.gaussian_nb.report.Low.precision,0.505882
+stage3.gaussian_nb.report.Low.recall,0.84432
+stage3.gaussian_nb.report.Low.f1-score,0.632685
+stage3.gaussian_nb.report.Low.support,713.0
+stage3.gaussian_nb.report.Medium.precision,0.348519
+stage3.gaussian_nb.report.Medium.recall,0.21826
+stage3.gaussian_nb.report.Medium.f1-score,0.268421
+stage3.gaussian_nb.report.Medium.support,701.0
+stage3.gaussian_nb.report.Top.precision,0.607889
+stage3.gaussian_nb.report.Top.recall,0.529293
+stage3.gaussian_nb.report.Top.f1-score,0.565875
+stage3.gaussian_nb.report.Top.support,495.0
+stage3.gaussian_nb.report.accuracy,0.47583
+stage3.gaussian_nb.report.macro avg.precision,0.455698
+stage3.gaussian_nb.report.macro avg.recall,0.459138
+stage3.gaussian_nb.report.macro avg.f1-score,0.439622
+stage3.gaussian_nb.report.macro avg.support,2379.0
+stage3.gaussian_nb.report.weighted avg.precision,0.452016
+stage3.gaussian_nb.report.weighted avg.recall,0.47583
+stage3.gaussian_nb.report.weighted avg.f1-score,0.444046
+stage3.gaussian_nb.report.weighted avg.support,2379.0
+stage3.categorical_nb.accuracy,0.5443
+stage3.categorical_nb.precision_macro,0.5192
+stage3.categorical_nb.recall_macro,0.5244
+stage3.categorical_nb.f1_macro,0.5112
+stage3.categorical_nb.confusion_matrix,"[[ 87  48 185 150]
+ [ 26 499 163  25]
+ [ 70 179 370  82]
+ [ 45  20  91 339]]"
+stage3.categorical_nb.classes[0],High
+stage3.categorical_nb.classes[1],Low
+stage3.categorical_nb.classes[2],Medium
+stage3.categorical_nb.classes[3],Top
+stage3.categorical_nb.report.High.precision,0.381579
+stage3.categorical_nb.report.High.recall,0.185106
+stage3.categorical_nb.report.High.f1-score,0.249284
+stage3.categorical_nb.report.High.support,470.0
+stage3.categorical_nb.report.Low.precision,0.668901
+stage3.categorical_nb.report.Low.recall,0.69986
+stage3.categorical_nb.report.Low.f1-score,0.68403
+stage3.categorical_nb.report.Low.support,713.0
+stage3.categorical_nb.report.Medium.precision,0.457355
+stage3.categorical_nb.report.Medium.recall,0.527817
+stage3.categorical_nb.report.Medium.f1-score,0.490066
+stage3.categorical_nb.report.Medium.support,701.0
+stage3.categorical_nb.report.Top.precision,0.568792
+stage3.categorical_nb.report.Top.recall,0.684848
+stage3.categorical_nb.report.Top.f1-score,0.621448
+stage3.categorical_nb.report.Top.support,495.0
+stage3.categorical_nb.report.accuracy,0.544346
+stage3.categorical_nb.report.macro avg.precision,0.519157
+stage3.categorical_nb.report.macro avg.recall,0.524408
+stage3.categorical_nb.report.macro avg.f1-score,0.511207
+stage3.categorical_nb.report.macro avg.support,2379.0
+stage3.categorical_nb.report.weighted avg.precision,0.528973
+stage3.categorical_nb.report.weighted avg.recall,0.544346
+stage3.categorical_nb.report.weighted avg.f1-score,0.527966
+stage3.categorical_nb.report.weighted avg.support,2379.0
+stage3.comparison[0].model,Majority baseline
+stage3.comparison[0].cv_accuracy,0.2999
+stage3.comparison[0].accuracy,0.2997
+stage3.comparison[0].precision_macro,0.0749
+stage3.comparison[0].recall_macro,0.25
+stage3.comparison[0].f1_macro,0.1153
+stage3.comparison[0].roc_auc_ovr,0.5
+stage3.comparison[1].model,"J48 (C4.5, ours)"
+stage3.comparison[1].cv_accuracy,0.5435
+stage3.comparison[1].accuracy,0.5595
+stage3.comparison[1].precision_macro,0.5344
+stage3.comparison[1].recall_macro,0.5389
+stage3.comparison[1].f1_macro,0.5291
+stage3.comparison[1].roc_auc_ovr,
+stage3.comparison[2].model,Decision Tree (entropy)
+stage3.comparison[2].cv_accuracy,0.557
+stage3.comparison[2].accuracy,0.5427
+stage3.comparison[2].precision_macro,0.5269
+stage3.comparison[2].recall_macro,0.5272
+stage3.comparison[2].f1_macro,0.525
+stage3.comparison[2].roc_auc_ovr,0.7764
+stage3.comparison[3].model,Naive Bayes (Gaussian)
+stage3.comparison[3].cv_accuracy,0.4509
+stage3.comparison[3].accuracy,0.4451
+stage3.comparison[3].precision_macro,0.4237
+stage3.comparison[3].recall_macro,0.427
+stage3.comparison[3].f1_macro,0.405
+stage3.comparison[3].roc_auc_ovr,0.7125
+stage3.comparison[4].model,Random Forest
+stage3.comparison[4].cv_accuracy,0.5753
+stage3.comparison[4].accuracy,0.5607
+stage3.comparison[4].precision_macro,0.5389
+stage3.comparison[4].recall_macro,0.5404
+stage3.comparison[4].f1_macro,0.5331
+stage3.comparison[4].roc_auc_ovr,0.7866
+stage3.j48_stats.leaves,27
+stage3.j48_stats.internal_nodes,14
+stage3.j48_stats.depth,5
+stage3.j48_stats.n_rules,27
+stage3.j48_stats.n_bins,10
+stage3.j48_stats.n_samples,9513
+stage3.j48_stats.train_accuracy,0.547882
+stage3.best,Random Forest
+stage3.best_accuracy,0.5864
+stage4.best,Gradient Boosting
+stage4.metrics[0].model,Gradient Boosting
+stage4.metrics[0].cv_RMSE,0.6393
+stage4.metrics[0].MAE,0.4833
+stage4.metrics[0].RMSE,0.6545
+stage4.metrics[0].R2,0.5956
+stage4.metrics[0].MAPE_%,8.164
+stage4.metrics[1].model,Random Forest
+stage4.metrics[1].cv_RMSE,0.6487
+stage4.metrics[1].MAE,0.4937
+stage4.metrics[1].RMSE,0.669
+stage4.metrics[1].R2,0.5774
+stage4.metrics[1].MAPE_%,8.309
+stage4.metrics[2].model,Decision Tree
+stage4.metrics[2].cv_RMSE,0.6831
+stage4.metrics[2].MAE,0.5168
+stage4.metrics[2].RMSE,0.6971
+stage4.metrics[2].R2,0.5412
+stage4.metrics[2].MAPE_%,8.73
+stage4.metrics[3].model,Linear Regression
+stage4.metrics[3].cv_RMSE,0.7016
+stage4.metrics[3].MAE,0.5508
+stage4.metrics[3].RMSE,0.7354
+stage4.metrics[3].R2,0.4894
+stage4.metrics[3].MAPE_%,9.405
+stage4.metrics[4].model,Ridge (alpha=1)
+stage4.metrics[4].cv_RMSE,0.7016
+stage4.metrics[4].MAE,0.5508
+stage4.metrics[4].RMSE,0.7354
+stage4.metrics[4].R2,0.4894
+stage4.metrics[4].MAPE_%,9.405
+stage4.metrics[5].model,Mean baseline
+stage4.metrics[5].cv_RMSE,0.9897
+stage4.metrics[5].MAE,0.7973
+stage4.metrics[5].RMSE,1.0292
+stage4.metrics[5].R2,-0.0001
+stage4.metrics[5].MAPE_%,13.655
+stage4.importance[0].attribute,members
+stage4.importance[0].importance,0.3378
+stage4.importance[0].rank,1
+stage4.importance[0].cumulative,0.3378
+stage4.importance[1].attribute,members_log
+stage4.importance[1].importance,0.3
+stage4.importance[1].rank,2
+stage4.importance[1].cumulative,0.6378
+stage4.importance[2].attribute,members_per_episode
+stage4.importance[2].importance,0.0987
+stage4.importance[2].rank,3
+stage4.importance[2].cumulative,0.7365
+stage4.importance[3].attribute,primary_genre
+stage4.importance[3].importance,0.0767
+stage4.importance[3].rank,4
+stage4.importance[3].cumulative,0.8132
+stage4.importance[4].attribute,type
+stage4.importance[4].importance,0.0515
+stage4.importance[4].rank,5
+stage4.importance[4].cumulative,0.8647
+stage4.importance[5].attribute,genre_count
+stage4.importance[5].importance,0.0392
+stage4.importance[5].rank,6
+stage4.importance[5].cumulative,0.9039
+stage4.importance[6].attribute,episodes
+stage4.importance[6].importance,0.0307
+stage4.importance[6].rank,7
+stage4.importance[6].cumulative,0.9346
+stage4.importance[7].attribute,episodes_log
+stage4.importance[7].importance,0.0304
+stage4.importance[7].rank,8
+stage4.importance[7].cumulative,0.965
+stage4.importance[8].attribute,is_shounen
+stage4.importance[8].importance,0.0134
+stage4.importance[8].rank,9
+stage4.importance[8].cumulative,0.9784
+stage4.importance[9].attribute,is_multi_genre
+stage4.importance[9].importance,0.0066
+stage4.importance[9].rank,10
+stage4.importance[9].cumulative,0.985
+stage5.anime.k,4
+stage5.anime.why,"elbow(knee)=4, silhouette-max=3"
+stage5.anime.rows,12294
+stage5.anime.kmeans_silhouette,0.3408
+stage5.anime.hier_silhouette,0.3097
+stage5.anime.sizes.0,2864
+stage5.anime.sizes.1,3771
+stage5.anime.sizes.2,1735
+stage5.anime.sizes.3,3924
+stage5.users.k,5
+stage5.users.why,"elbow(knee)=5, silhouette-max=4"
+stage5.users.rows,69600
+stage5.users.kmeans_silhouette,0.2764
+stage5.users.hier_silhouette,0.22
+stage5.users.sizes.0,1834
+stage5.users.sizes.1,29373
+stage5.users.sizes.2,19350
+stage5.users.sizes.3,14188
+stage5.users.sizes.4,4855
+stage3.j48.accuracy,0.5595
+stage3.j48.precision_macro,0.5344
+stage3.j48.recall_macro,0.5389
+stage3.j48.f1_macro,0.5291
+stage3.j48.confusion_matrix,"[[102  33 186 149]
+ [ 14 513 172  14]
+ [ 57 183 383  78]
+ [ 89  17  56 333]]"
+stage3.j48.classes[0],High
+stage3.j48.classes[1],Low
+stage3.j48.classes[2],Medium
+stage3.j48.classes[3],Top
+stage3.j48.report.High.precision,0.389313
+stage3.j48.report.High.recall,0.217021
+stage3.j48.report.High.f1-score,0.278689
+stage3.j48.report.High.support,470.0
+stage3.j48.report.Low.precision,0.687668
+stage3.j48.report.Low.recall,0.719495
+stage3.j48.report.Low.f1-score,0.703221
+stage3.j48.report.Low.support,713.0
+stage3.j48.report.Medium.precision,0.480552
+stage3.j48.report.Medium.recall,0.546362
+stage3.j48.report.Medium.f1-score,0.511348
+stage3.j48.report.Medium.support,701.0
+stage3.j48.report.Top.precision,0.580139
+stage3.j48.report.Top.recall,0.672727
+stage3.j48.report.Top.f1-score,0.623012
+stage3.j48.report.Top.support,495.0
+stage3.j48.report.accuracy,0.559479
+stage3.j48.report.macro avg.precision,0.534418
+stage3.j48.report.macro avg.recall,0.538901
+stage3.j48.report.macro avg.f1-score,0.529068
+stage3.j48.report.macro avg.support,2379.0
+stage3.j48.report.weighted avg.precision,0.545322
+stage3.j48.report.weighted avg.recall,0.559479
+stage3.j48.report.weighted avg.f1-score,0.546123
+stage3.j48.report.weighted avg.support,2379.0
+stage3.gaussian_nb.accuracy,0.4758
+stage3.gaussian_nb.precision_macro,0.4557
+stage3.gaussian_nb.recall_macro,0.4591
+stage3.gaussian_nb.f1_macro,0.4396
+stage3.gaussian_nb.confusion_matrix,"[[115 135 142  78]
+ [ 19 602  68  24]
+ [ 77 404 153  67]
+ [108  49  76 262]]"
+stage3.gaussian_nb.classes[0],High
+stage3.gaussian_nb.classes[1],Low
+stage3.gaussian_nb.classes[2],Medium
+stage3.gaussian_nb.classes[3],Top
+stage3.gaussian_nb.report.High.precision,0.360502
+stage3.gaussian_nb.report.High.recall,0.244681
+stage3.gaussian_nb.report.High.f1-score,0.291508
+stage3.gaussian_nb.report.High.support,470.0
+stage3.gaussian_nb.report.Low.precision,0.505882
+stage3.gaussian_nb.report.Low.recall,0.84432
+stage3.gaussian_nb.report.Low.f1-score,0.632685
+stage3.gaussian_nb.report.Low.support,713.0
+stage3.gaussian_nb.report.Medium.precision,0.348519
+stage3.gaussian_nb.report.Medium.recall,0.21826
+stage3.gaussian_nb.report.Medium.f1-score,0.268421
+stage3.gaussian_nb.report.Medium.support,701.0
+stage3.gaussian_nb.report.Top.precision,0.607889
+stage3.gaussian_nb.report.Top.recall,0.529293
+stage3.gaussian_nb.report.Top.f1-score,0.565875
+stage3.gaussian_nb.report.Top.support,495.0
+stage3.gaussian_nb.report.accuracy,0.47583
+stage3.gaussian_nb.report.macro avg.precision,0.455698
+stage3.gaussian_nb.report.macro avg.recall,0.459138
+stage3.gaussian_nb.report.macro avg.f1-score,0.439622
+stage3.gaussian_nb.report.macro avg.support,2379.0
+stage3.gaussian_nb.report.weighted avg.precision,0.452016
+stage3.gaussian_nb.report.weighted avg.recall,0.47583
+stage3.gaussian_nb.report.weighted avg.f1-score,0.444046
+stage3.gaussian_nb.report.weighted avg.support,2379.0
+stage3.categorical_nb.accuracy,0.5443
+stage3.categorical_nb.precision_macro,0.5192
+stage3.categorical_nb.recall_macro,0.5244
+stage3.categorical_nb.f1_macro,0.5112
+stage3.categorical_nb.confusion_matrix,"[[ 87  48 185 150]
+ [ 26 499 163  25]
+ [ 70 179 370  82]
+ [ 45  20  91 339]]"
+stage3.categorical_nb.classes[0],High
+stage3.categorical_nb.classes[1],Low
+stage3.categorical_nb.classes[2],Medium
+stage3.categorical_nb.classes[3],Top
+stage3.categorical_nb.report.High.precision,0.381579
+stage3.categorical_nb.report.High.recall,0.185106
+stage3.categorical_nb.report.High.f1-score,0.249284
+stage3.categorical_nb.report.High.support,470.0
+stage3.categorical_nb.report.Low.precision,0.668901
+stage3.categorical_nb.report.Low.recall,0.69986
+stage3.categorical_nb.report.Low.f1-score,0.68403
+stage3.categorical_nb.report.Low.support,713.0
+stage3.categorical_nb.report.Medium.precision,0.457355
+stage3.categorical_nb.report.Medium.recall,0.527817
+stage3.categorical_nb.report.Medium.f1-score,0.490066
+stage3.categorical_nb.report.Medium.support,701.0
+stage3.categorical_nb.report.Top.precision,0.568792
+stage3.categorical_nb.report.Top.recall,0.684848
+stage3.categorical_nb.report.Top.f1-score,0.621448
+stage3.categorical_nb.report.Top.support,495.0
+stage3.categorical_nb.report.accuracy,0.544346
+stage3.categorical_nb.report.macro avg.precision,0.519157
+stage3.categorical_nb.report.macro avg.recall,0.524408
+stage3.categorical_nb.report.macro avg.f1-score,0.511207
+stage3.categorical_nb.report.macro avg.support,2379.0
+stage3.categorical_nb.report.weighted avg.precision,0.528973
+stage3.categorical_nb.report.weighted avg.recall,0.544346
+stage3.categorical_nb.report.weighted avg.f1-score,0.527966
+stage3.categorical_nb.report.weighted avg.support,2379.0
+stage3.comparison[0].model,Majority baseline
+stage3.comparison[0].cv_accuracy,0.2999
+stage3.comparison[0].accuracy,0.2997
+stage3.comparison[0].precision_macro,0.0749
+stage3.comparison[0].recall_macro,0.25
+stage3.comparison[0].f1_macro,0.1153
+stage3.comparison[0].roc_auc_ovr,0.5
+stage3.comparison[1].model,"J48 (C4.5, ours)"
+stage3.comparison[1].cv_accuracy,0.5435
+stage3.comparison[1].accuracy,0.5595
+stage3.comparison[1].precision_macro,0.5344
+stage3.comparison[1].recall_macro,0.5389
+stage3.comparison[1].f1_macro,0.5291
+stage3.comparison[1].roc_auc_ovr,
+stage3.comparison[2].model,Decision Tree (entropy)
+stage3.comparison[2].cv_accuracy,0.5572
+stage3.comparison[2].accuracy,0.5628
+stage3.comparison[2].precision_macro,0.5517
+stage3.comparison[2].recall_macro,0.5504
+stage3.comparison[2].f1_macro,0.5505
+stage3.comparison[2].roc_auc_ovr,0.8034
+stage3.comparison[3].model,Naive Bayes (Gaussian)
+stage3.comparison[3].cv_accuracy,0.471
+stage3.comparison[3].accuracy,0.4758
+stage3.comparison[3].precision_macro,0.4557
+stage3.comparison[3].recall_macro,0.4591
+stage3.comparison[3].f1_macro,0.4396
+stage3.comparison[3].roc_auc_ovr,0.7403
+stage3.comparison[4].model,Random Forest
+stage3.comparison[4].cv_accuracy,0.5812
+stage3.comparison[4].accuracy,0.5864
+stage3.comparison[4].precision_macro,0.5668
+stage3.comparison[4].recall_macro,0.5699
+stage3.comparison[4].f1_macro,0.5649
+stage3.comparison[4].roc_auc_ovr,0.8287
+stage3.j48_stats.leaves,27
+stage3.j48_stats.internal_nodes,14
+stage3.j48_stats.depth,5
+stage3.j48_stats.n_rules,27
+stage3.j48_stats.n_bins,10
+stage3.j48_stats.n_samples,9513
+stage3.j48_stats.train_accuracy,0.547882

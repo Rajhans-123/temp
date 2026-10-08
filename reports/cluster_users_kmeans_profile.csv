@@ -1,0 +1,6 @@
+cluster,n,share_%,n_ratings,mean_rating,std_rating,like_ratio,range_rating,max_rating,segment_name
+0,1834,2.64,5.35,7.066,0.353,0.496,0.805,7.412,light rater / harsh critic / consistent
+1,29373,42.2,59.439,8.404,1.301,0.764,4.856,9.955,casual rater / balanced / opinionated
+2,19350,27.8,111.061,7.315,1.505,0.472,6.583,9.875,casual rater / harsh critic / erratic
+3,14188,20.39,16.866,9.384,0.537,0.982,1.489,9.862,light rater / generous / consistent
+4,4855,6.98,451.742,7.86,1.253,0.628,6.834,9.988,heavy rater / balanced / opinionated

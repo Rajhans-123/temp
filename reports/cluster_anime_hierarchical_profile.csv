@@ -1,0 +1,5 @@
+cluster,n,share_%,members_log,episodes_log,rating,genre_count,is_shounen,is_multi_genre,top_name,top_type,segment_name
+0,283,23.58,6.242,1.146,5.935,0.989,0.011,0.0,Tokyo Magnitude 8.0 (1) | The Everlasting Guilty Crown (1) | Kyoukai no Kanata Movie: I&#039;ll Be Here - Kako-hen - Yakusoku no Kizuna (1),OVA | Movie,niche / poorly rated / short-form
+1,170,14.17,8.459,1.849,7.061,4.571,1.0,1.0,Haikyuu!! Second Season (1) | Bakuman. 3rd Season (1) | JoJo no Kimyou na Bouken (TV) (1),TV | Movie,mid-reach / solid / mid-length
+2,459,38.25,6.258,1.878,6.187,2.789,0.0,1.0,"Chibi Maruko-chan (1) | Yondemasu yo, Azazel-san. Z (1) | Super GALS! Kotobuki Ran (1)",TV | OVA,niche / poorly rated / long-form
+3,288,24.0,9.812,1.659,7.27,4.33,0.0,1.0,Code Geass: Hangyaku no Lelouch (1) | Natsume Yuujinchou Go (1) | Mushishi Zoku Shou: Suzu no Shizuku (1),TV | OVA,blockbuster / acclaimed / short-form

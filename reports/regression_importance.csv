@@ -1,0 +1,16 @@
+attribute,importance,rank,cumulative
+members,0.3378,1,0.3378
+members_log,0.3,2,0.6378
+members_per_episode,0.0987,3,0.7365
+primary_genre,0.0767,4,0.8132
+type,0.0515,5,0.8647
+genre_count,0.0392,6,0.9039
+episodes,0.0307,7,0.9346
+episodes_log,0.0304,8,0.965
+is_shounen,0.0134,9,0.9784
+is_multi_genre,0.0066,10,0.985
+episodes_band,0.0048,11,0.9898
+is_seinen,0.0047,12,0.9945
+is_shoujo,0.004,13,0.9985
+members_band,0.0015,14,1.0
+has_isekai,0.0,15,1.0

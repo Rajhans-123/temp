@@ -1,0 +1,51 @@
+2026-09-29 13:02:57 | INFO     | app                | logging system ready, level=10
+2026-09-29 13:02:57 | DEBUG    | app                | DEBUG    - cache miss for key 'user:42', falling back to disk
+2026-09-29 13:02:57 | INFO     | app                | INFO     - 3 records written to output/records.csv
+2026-09-29 13:02:57 | WARNING  | app                | WARNING  - retrying upload, attempt 2 of 3
+2026-09-29 13:02:57 | ERROR    | app                | ERROR    - record 7 could not be parsed as an integer
+2026-09-29 13:02:57 | CRITICAL | app                | CRITICAL - database unreachable, shutting the worker down
+2026-09-29 13:02:57 | INFO     | app                | stored record Attack on Titan (score=9)
+2026-09-29 13:02:57 | INFO     | app                | stored record Steins;Gate (score=8)
+2026-09-29 13:02:57 | DEBUG    | app                | loading records from C:\Users\deeks\OneDrive\Documents\Default Project\assignments\09_logging_exceptions_threads\output\records.csv
+2026-09-29 13:02:57 | ERROR    | app                | save failed: [VALIDATION_ERROR] saving record: score for 'Cowboy Bebop' is 'nine', not an int
+Traceback (most recent call last):
+  File "C:\Users\deeks\OneDrive\Documents\Default Project\assignments\09_logging_exceptions_threads\core\exceptions.py", line 121, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\deeks\OneDrive\Documents\Default Project\assignments\09_logging_exceptions_threads\main.py", line 69, in save
+    raise ValueError(f"score for {name!r} is {score!r}, not an int")
+ValueError: score for 'Cowboy Bebop' is 'nine', not an int
+2026-09-29 13:02:57 | ERROR    | app                | save failed: [VALIDATION_ERROR] saving record: score 42 for 'Cowboy Bebop' is outside 0-10
+Traceback (most recent call last):
+  File "C:\Users\deeks\OneDrive\Documents\Default Project\assignments\09_logging_exceptions_threads\core\exceptions.py", line 121, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\deeks\OneDrive\Documents\Default Project\assignments\09_logging_exceptions_threads\main.py", line 71, in save
+    raise ValueError(f"score {score} for {name!r} is outside 0-10")
+ValueError: score 42 for 'Cowboy Bebop' is outside 0-10
+2026-09-29 13:02:57 | ERROR    | app                | load failed: [STORAGE_ERROR] loading records: file not found
+Traceback (most recent call last):
+  File "C:\Users\deeks\OneDrive\Documents\Default Project\assignments\09_logging_exceptions_threads\core\exceptions.py", line 121, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\deeks\OneDrive\Documents\Default Project\assignments\09_logging_exceptions_threads\main.py", line 86, in load
+    raise FileNotFoundError(f"{self.path} does not exist yet")
+FileNotFoundError: C:\Users\deeks\OneDrive\Documents\Default Project\assignments\09_logging_exceptions_threads\output\never_written.csv does not exist yet
+2026-09-29 13:02:57 | DEBUG    | app                | worker 3 dividing by its retry count
+2026-09-29 13:02:57 | ERROR    | app                | crash failed: [PROCESSING_ERROR] crashing worker: unexpected ZeroDivisionError
+Traceback (most recent call last):
+  File "C:\Users\deeks\OneDrive\Documents\Default Project\assignments\09_logging_exceptions_threads\core\exceptions.py", line 121, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\deeks\OneDrive\Documents\Default Project\assignments\09_logging_exceptions_threads\main.py", line 94, in crash
+    return 10 / (worker - worker)      # always ZeroDivisionError
+           ~~~^~~~~~~~~~~~~~~~~~~
+ZeroDivisionError: division by zero
+2026-09-29 13:02:57 | DEBUG    | app                | worker 3 dividing by its retry count
+2026-09-29 13:02:57 | ERROR    | app                | crash failed: [PROCESSING_ERROR] crashing worker: unexpected ZeroDivisionError
+Traceback (most recent call last):
+  File "C:\Users\deeks\OneDrive\Documents\Default Project\assignments\09_logging_exceptions_threads\core\exceptions.py", line 121, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\deeks\OneDrive\Documents\Default Project\assignments\09_logging_exceptions_threads\main.py", line 94, in crash
+    return 10 / (worker - worker)      # always ZeroDivisionError
+           ~~~^~~~~~~~~~~~~~~~~~~
+ZeroDivisionError: division by zero
+2026-09-29 13:02:57 | DEBUG    | app                | loading records from C:\Users\deeks\OneDrive\Documents\Default Project\assignments\09_logging_exceptions_threads\output\records.csv
+2026-09-29 13:02:57 | WARNING  | app                | unsafe write lost 119 of 320 lines
+2026-09-29 13:02:57 | INFO     | app                | 8 threads wrote 320 lines with no corruption
