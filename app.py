@@ -186,16 +186,57 @@ def get_nb():
 
 @st.cache_data(show_spinner="comparing classifiers (5-fold CV) ...")
 def get_compare():
+    # Cloud-safe: prefer the precomputed table from `python train.py`.
+    # Live 5-fold CV (RF + J48 + NB) needs >500 MB and OOMs the 1 GB Cloud
+    # container, so it only runs on explicit request via `live=True`.
+    pre = C.REPORT_DIR / "classification_comparison.csv"
+    pred_path = C.REPORT_DIR / "classification_predictions.csv"
+    if pre.exists():
+        table = pd.read_csv(pre)
+        preds = pd.read_csv(pred_path) if pred_path.exists() else pd.DataFrame()
+        best = table.sort_values("accuracy", ascending=False).iloc[0]["model"] \
+            if not table.empty else "-"
+        return {"table": table, "predictions": preds, "best": best,
+                "precomputed": True}
     Xtr, ytr, Xte = CL.load_classification_data()
     yte = pd.read_csv(C.CLS_SPLIT.with_name("classification_test.csv"))["target"]
-    return CL.compare_models(Xtr, ytr, Xte, yte)
+    r = CL.compare_models(Xtr, ytr, Xte, yte)
+    r["precomputed"] = False
+    return r
 
 
-@st.cache_data(show_spinner="running regression ...")
+@st.cache_data(show_spinner="loading regression results ...")
 def get_regression():
+    # Cloud-safe: serve precomputed CSVs. Training 6 regressors x 5-fold CV +
+    # learning curve live costs ~800 MB and reliably exceeds Cloud limits.
+    comp = C.REPORT_DIR / "regression_comparison.csv"
+    if comp.exists():
+        try:
+            table = pd.read_csv(comp)
+            scatter = pd.read_csv(C.REPORT_DIR / "regression_actual_vs_predicted.csv")
+            # cap scatter to 2000 points so Plotly JSON stays small
+            if len(scatter) > 2000:
+                scatter = scatter.sample(min(2000, len(scatter)), random_state=42)
+            residuals = pd.read_csv(C.REPORT_DIR / "regression_residuals.csv")
+            if len(residuals) > 2000:
+                residuals = residuals.sample(min(2000, len(residuals)), random_state=42)
+            by_type = pd.read_csv(C.REPORT_DIR / "regression_by_type.csv")
+            lc = pd.read_csv(C.REPORT_DIR / "regression_learning_curve.csv")
+            imp = pd.read_csv(C.REPORT_DIR / "regression_importance.csv")
+            tree_txt = ""
+            tp = C.REPORT_DIR / "sklearn_tree.txt"
+            if tp.exists():
+                tree_txt = tp.read_text(encoding="utf-8")[:3500]
+            return {"table": table, "scatter": scatter, "residuals": residuals,
+                    "by_type": by_type, "learning_curve": lc,
+                    "importance": imp, "tree_text": tree_txt,
+                    "precomputed": True}
+        except Exception:
+            pass
     Xtr, ytr, Xte, yte = R.load_regression_data()
     r = R.run_regression(Xtr, ytr, Xte, yte)
     r["importance"] = R.feature_importance(Xtr, ytr)
+    r["precomputed"] = False
     return r
 
 
@@ -223,12 +264,12 @@ def get_hier(key: str, k: int, sample: int):
     return r
 
 
-@st.cache_data(show_spinner="loading the trained predictor ...")
+@st.cache_resource(show_spinner="loading the trained predictor ...")
 def get_predictor():
     return PRED.RatingPredictor()
 
 
-@st.cache_data(show_spinner="loading the recommender ...")
+@st.cache_resource(show_spinner="loading the recommender ...")
 def get_recommender():
     return PRED.Recommender()
 
@@ -266,11 +307,15 @@ with st.sidebar:
 TABS = ["1 - Overview", "2 - Preprocessing", "3 - Association Rules",
         "4 - Classification", "5 - Regression", "6 - Clustering",
         "7 - Prediction System"]
-tab = st.tabs(TABS)
+# NOTE: sidebar navigation (not st.tabs) is intentional for Streamlit Cloud.
+# st.tabs executes *every* tab's block on each rerun, so opening the app would
+# simultaneously train classifiers + regressors + K-Means on 69k users and blow
+# the 1 GB Cloud memory limit. A radio renders only the selected page.
+page = st.sidebar.radio("Go to", TABS, index=0)
 
 
 # ========================================================== 1 OVERVIEW ======
-with tab[0]:
+if page == TABS[0]:
     st.title("Data Warehousing & Mining on the Anime Recommendations Database")
     st.markdown(
         "A single end-to-end mining pipeline over the MyAnimeList data scraped by "
@@ -363,7 +408,7 @@ with tab[0]:
 
 
 # ====================================================== 2 PREPROCESSING ====
-with tab[1]:
+if page == TABS[1]:
     st.title("Data Preprocessing")
     st.caption("Profiling, cleaning, type casting, outlier detection, "
                "normalisation, discretisation and train/test splitting.")
@@ -464,7 +509,7 @@ with tab[1]:
 
 
 # ================================================== 3 ASSOCIATION RULES =====
-with tab[2]:
+if page == TABS[2]:
     st.title("Association Rule Mining")
     st.caption("Apriori and FP-Growth frequent itemset mining, then rule "
                "generation with support / confidence / lift and the extra metrics "
@@ -567,7 +612,7 @@ with tab[2]:
 
 
 # ===================================================== 4 CLASSIFICATION =====
-with tab[3]:
+if page == TABS[3]:
     st.title("Classification Rule Mining")
     st.caption("Predicting the discretised rating class (`rating_tier`) of an "
                "anime from its content attributes, with J48 and Naive Bayes.")
@@ -713,7 +758,7 @@ with tab[3]:
 
 
 # ========================================================= 5 REGRESSION ====
-with tab[4]:
+if page == TABS[4]:
     st.title("Regression / Continuous Estimation")
     st.caption("Predicting the MyAnimeList community score (a continuous 0-10 "
                "value) from content attributes - the model behind the prediction widget.")
@@ -785,7 +830,7 @@ with tab[4]:
 
 
 # ========================================================= 6 CLUSTERING ====
-with tab[5]:
+if page == TABS[5]:
     st.title("Clustering - K-Means and Hierarchical, on Two Datasets")
     st.caption("Dataset A clusters the 12,294 anime by content. Dataset B clusters "
                "the 69,600 user profiles by rating behaviour. Both are clustered with "
@@ -814,9 +859,9 @@ with tab[5]:
     c1, c2, c3 = cols([1, 1, 1.3])
     k = c1.slider("k (number of clusters)", 2, 8, int(auto_k))
     seed = c2.slider("random seed", 0, 100, C.RANDOM_STATE)
-    sample = c3.slider("hierarchical sample size", 300, 3000, CLC.HIER_SAMPLE, 100,
+    sample = c3.slider("hierarchical sample size", 300, 2000, min(CLC.HIER_SAMPLE, 2000), 100,
                        help="Ward linkage is O(n^2) in memory, so it is fitted on a "
-                            "random subsample")
+                            "random subsample (capped at 2000 for Cloud)")
     st.caption(f"`distance_to_chord` marks the elbow: the point furthest from the "
                f"straight line joining the first and last inertia value. "
                f"Selected k = **{auto_k}** ({why}).")
@@ -838,12 +883,15 @@ with tab[5]:
         table(km["named"], height=260)
     with b:
         name_of = dict(zip(km["named"]["cluster"], km["named"]["segment_name"]))
+        _pidx = km.get("pca_idx", None)
+        _labs = km["labels"][_pidx] if _pidx is not None else km["labels"]
         px_df = pd.DataFrame({
             "PC1": km["pca"][:, 0], "PC2": km["pca"][:, 1],
-            "cluster": [f"C{int(c)} - {name_of.get(c, '')}" for c in km["labels"]],
+            "cluster": [f"C{int(c)} - {name_of.get(int(c), '')}" for c in _labs],
         })
         fig = px.scatter(px_df, x="PC1", y="PC2", color="cluster", opacity=0.5,
-                         title=f"K-Means on 2 principal components (k={k})",
+                         title=f"K-Means on 2 principal components (k={k}, "
+                               f"{len(px_df):,} pts sampled)",
                          labels={"PC1": "PC1", "PC2": "PC2"})
         fig.update_layout(height=360, margin=dict(t=40, l=0, r=0))
         st.plotly_chart(fig, width="stretch")
@@ -936,7 +984,7 @@ with tab[5]:
 
 
 # =================================================== 7 PREDICTION SYSTEM ====
-with tab[6]:
+if page == TABS[6]:
     st.title("Prediction System")
     st.caption("A trained model scores an anime you describe, and a hybrid "
                "recommender suggests what to watch next.")

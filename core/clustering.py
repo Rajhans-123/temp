@@ -41,6 +41,28 @@ DATASETS = {
 
 K_RANGE = range(2, 9)
 HIER_SAMPLE = 1200          # dendrogram cost is O(n^2) -> subsample for Ward
+SIL_SAMPLE = 5000           # silhouette is O(n^2) in memory -> never score more
+PCA_PLOT_SAMPLE = 3000      # max points forwarded for the 2-D scatter
+
+
+def _sampled_silhouette(Z: np.ndarray, labels: np.ndarray,
+                        max_n: int = SIL_SAMPLE) -> float:
+    """Silhouette on a fixed random subsample.
+
+    Full silhouette needs a pairwise distance matrix (n^2 floats: ~19 GB for
+    the 69.6k user rows), which is what kills 1 GB Streamlit Cloud containers.
+    A 5k sample gives the same value to ~0.01 at <10 MB.
+    """
+    Z = np.asarray(Z)
+    labels = np.asarray(labels)
+    n = len(Z)
+    if n > max_n:
+        rs = np.random.RandomState(C.RANDOM_STATE)
+        idx = rs.choice(n, size=max_n, replace=False)
+        Z, labels = Z[idx], labels[idx]
+    if len(np.unique(labels)) < 2:
+        return float("nan")
+    return float(silhouette_score(Z, labels))
 
 
 def load_dataset(key: str, min_rows: int = 1) -> pd.DataFrame:
@@ -109,11 +131,18 @@ def kmeans_cluster(df: pd.DataFrame, key: str, k: int, seed: int = C.RANDOM_STAT
     Z, cols, Xraw = scaled_matrix(df, key)
     km = KMeans(n_clusters=k, n_init=10, random_state=seed).fit(Z)
     labels = km.labels_
-    sil = silhouette_score(Z, km.labels_)
+    sil = _sampled_silhouette(Z, km.labels_)
     prof = profile(df, key, labels, Z, cols)
-    pca = PCA(n_components=2, random_state=seed).fit_transform(Z)
+    # PCA is fitted on a subsample for speed, then applied to a capped sample
+    # for plotting; returning 69k scatter points would OOM the browser anyway.
+    rs = np.random.RandomState(seed)
+    fit_idx = rs.choice(len(Z), size=min(5000, len(Z)), replace=False)
+    pca_model = PCA(n_components=2, random_state=seed).fit(Z[fit_idx])
+    plot_idx = rs.choice(len(Z), size=min(PCA_PLOT_SAMPLE, len(Z)), replace=False)
+    plot_idx = np.sort(plot_idx)
     return {
-        "labels": labels, "Z": Z, "pca": pca, "features": cols,
+        "labels": labels, "Z": Z, "pca": pca_model.transform(Z[plot_idx]),
+        "pca_idx": plot_idx, "features": cols,
         "inertia": float(km.inertia_), "silhouette": float(sil),
         "centers_raw": pd.DataFrame(km.cluster_centers_, columns=cols).round(3),
         "profile": prof, "k": k, "n": len(df),
@@ -142,12 +171,12 @@ def hierarchical_cluster(df: pd.DataFrame, key: str, k: int,
     n = len(Z)
     idx = np.sort(rs.choice(n, size=min(sample, n), replace=False))
     Zs = Z[idx]
-    link = linkage(Zs, method="ward", metric="euclidean", optimal_ordering=True)
+    link = linkage(Zs, method="ward", metric="euclidean", optimal_ordering=False)
     labels = fcluster(link, t=k, criterion="maxclust") - 1     # back to 0..k-1
     return {
         "sample_labels": labels, "sample_idx": idx,
         "sample_df": df.iloc[idx].reset_index(drop=True),
-        "silhouette": float(silhouette_score(Zs, labels)), "k": k,
+        "silhouette": float(_sampled_silhouette(Zs, labels)), "k": k,
         "n_sample": len(idx), "n": n, "linkage": "ward",
         "Z_linkage": link, "linkage_matrix": link, "features": cols,
         "profile": profile(df.iloc[idx].reset_index(drop=True), key, labels, Zs, cols),

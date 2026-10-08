@@ -1,7 +1,9 @@
-# Runtime dependencies - pinned to the versions this project was built and tested on.
+# Runtime dependencies.
 # Install with:  python -m pip install -r requirements.txt
+# NOTE: Streamlit is kept current per Streamlit Cloud guidance ("upgrade to the
+# latest release" fixes known memory leaks in older versions).
 
-streamlit==1.64.0
+streamlit>=1.49
 pandas==3.0.5
 numpy==2.5.2
 scipy==1.18.1

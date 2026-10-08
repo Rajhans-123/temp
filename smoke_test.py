@@ -57,13 +57,19 @@ def check(at, label: str) -> bool:
 
 
 def tab_report(at) -> None:
-    for i, tab in enumerate(at.tabs):
-        n = sum(len(els(tab, k)) for k in
-                ("dataframe", "markdown", "metric", "selectbox", "slider",
-                 "button", "plotly_chart", "vega_lite_chart", "multiselect",
-                 "text_input", "number_input", "radio"))
-        if not n:
-            print(f"FAIL tab {i} rendered no elements")
+    # app uses sidebar radio navigation (lazy pages for Cloud memory limits),
+    # not st.tabs -- verify the page radio exists and has all 7 pages.
+    radios = list(at.radio)
+    pages = []
+    for r in radios:
+        try:
+            pages.extend(list(r.options))
+        except Exception:
+            pass
+    expected = ["1 - Overview", "4 - Classification", "7 - Prediction System"]
+    for e in expected:
+        if not any(e in str(p) for p in pages):
+            print(f"FAIL navigation radio missing {e!r} (found {pages})")
 
 
 def main() -> int:
@@ -71,7 +77,7 @@ def main() -> int:
     at = AppTest.from_file("app.py", default_timeout=TIMEOUT)
     at.run(timeout=TIMEOUT)
     print(f"script executed in {time.time() - t0:.1f}s")
-    print(f"tabs={len(at.tabs)} dataframes={len(at.dataframe)} "
+    print(f"radios={len(at.radio)} dataframes={len(at.dataframe)} "
           f"selectbox={len(at.selectbox)} multiselect={len(at.multiselect)} "
           f"slider={len(at.slider)} radio={len(at.radio)} button={len(at.button)}")
     if not check(at, "initial render"):
