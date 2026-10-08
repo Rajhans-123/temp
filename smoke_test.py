@@ -58,7 +58,7 @@ def check(at, label: str) -> bool:
 
 def tab_report(at) -> None:
     # app uses sidebar radio navigation (lazy pages for Cloud memory limits),
-    # not st.tabs -- verify the page radio exists and has all 8 pages.
+    # not st.tabs -- verify the page radio exists and has all 9 pages.
     radios = list(at.radio)
     pages = []
     for r in radios:
@@ -67,7 +67,7 @@ def tab_report(at) -> None:
         except Exception:
             pass
     expected = ["1 - Overview", "4 - Classification", "7 - Prediction System",
-                "8 - Live Feed"]
+                "8 - Live Feed", "9 - Model Comparison"]
     for e in expected:
         if not any(e in str(p) for p in pages):
             print(f"FAIL navigation radio missing {e!r} (found {pages})")

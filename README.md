@@ -237,6 +237,9 @@ OLAP-style roll-up over the discretised dimension.
    dendrogram, and the cluster x class cube.
 7. **Prediction System** - the score form, its interval and feature importance,
    plus the three recommender modes and a retrain button.
+8. **Live Feed** - sync status, score/member trends, and the fetch-and-sync demo.
+9. **Model Comparison** - champion leaderboards: best classifier, regressor,
+   clustering verdict, Apriori vs FP-Growth runtime, and the deployed blend.
 
 ---
 

@@ -309,7 +309,7 @@ with st.sidebar:
 
 TABS = ["1 - Overview", "2 - Preprocessing", "3 - Association Rules",
         "4 - Classification", "5 - Regression", "6 - Clustering",
-        "7 - Prediction System", "8 - Live Feed"]
+        "7 - Prediction System", "8 - Live Feed", "9 - Model Comparison"]
 # NOTE: sidebar navigation (not st.tabs) is intentional for Streamlit Cloud.
 # st.tabs executes *every* tab's block on each rerun, so opening the app would
 # simultaneously train classifiers + regressors + K-Means on 69k users and blow
@@ -1329,3 +1329,155 @@ if page == TABS[7]:
                 trim["genres"] = [(g or {}).get("name")
                                   for g in (payload.get("genres") or [])]
                 st.json(trim)
+
+
+# ================================================= 9 MODEL COMPARISON ======
+if page == TABS[8]:
+    st.title("Model Comparison - Champions by Stage")
+    st.caption("Every model below was trained by `python train.py` and scored on "
+               "held-out data. This page only reads the precomputed report CSVs, "
+               "so it renders instantly - the full diagnostics live on each "
+               "stage's own tab.")
+
+    _clf = read_report("classification_comparison.csv")
+    _reg = read_report("regression_comparison.csv")
+    _bench = read_report("apriori_vs_fpgrowth.csv")
+    _pred = read_report("predictor_metrics.csv")
+    _mine = load_mining_summary()
+
+    def _champ(df: pd.DataFrame, metric: str, higher: bool = True) -> pd.Series:
+        real = df[~df["model"].str.contains("baseline", case=False)]
+        return real.sort_values(metric, ascending=not higher).iloc[0]
+
+    with cols(4):
+        if not _clf.empty:
+            b = _champ(_clf, "accuracy")
+            kpi("best classifier", str(b["model"]),
+                f"test accuracy {b['accuracy']:.1%} - F1 {b['f1_macro']:.1%}")
+        if not _reg.empty:
+            b = _champ(_reg, "RMSE", higher=False)
+            kpi("best regressor", str(b["model"]),
+                f"RMSE {b['RMSE']:.4f} - R2 {b['R2']:.4f}")
+        if not _pred.empty:
+            t = _pred[_pred["split"] == "test"].sort_values("RMSE").iloc[0]
+            kpi("deployed predictor", "RF + GB blend",
+                f"held-out RMSE {t['RMSE']:.4f} - R2 {t['R2']:.4f}")
+        kpi("clustering", f"k={REP.get(_mine, 'stage5.anime.k', '-')}/"
+                          f"{REP.get(_mine, 'stage5.users.k', '-')}",
+            f"sil {float(REP.get(_mine, 'stage5.anime.kmeans_silhouette', 0)):.3f} / "
+            f"{float(REP.get(_mine, 'stage5.users.kmeans_silhouette', 0)):.3f} "
+            f"(anime / users)")
+
+    st.subheader("A - Classification: who predicts the rating tier best?")
+    if not _clf.empty:
+        c = _clf.sort_values("accuracy", ascending=True)
+        fig = px.bar(c, x="accuracy", y="model", orientation="h", color="f1_macro",
+                     color_continuous_scale="Blues", text="accuracy",
+                     hover_data=["cv_accuracy", "precision_macro", "recall_macro",
+                                 "roc_auc_ovr"],
+                     title="Held-out test accuracy (color = macro F1)",
+                     labels={"accuracy": "test accuracy", "f1_macro": "macro F1"})
+        fig.update_traces(texttemplate="%{text:.1%}", textposition="outside")
+        base = float(_clf.loc[_clf["model"].str.contains("Majority",
+                                                        case=False),
+                              "accuracy"].iloc[0])
+        fig.add_vline(x=base, line_dash="dash", line_color="grey",
+                      annotation_text="majority baseline")
+        fig.update_layout(template="plotly_white", height=330,
+                          margin=dict(t=40, l=0, r=60))
+        st.plotly_chart(fig, width="stretch")
+        table(_clf.sort_values("accuracy", ascending=False), height=250)
+        download(_clf, "classification_comparison.csv")
+        st.caption("Random Forest wins on accuracy, but the from-scratch J48 is "
+                   "within 3 points while producing readable IF/THEN rules - the "
+                   "accuracy tax for interpretability.")
+    else:
+        st.info("run `python train.py 3` to produce the comparison.")
+
+    st.subheader("B - Regression: who estimates the continuous score best?")
+    if not _reg.empty:
+        r = _reg.sort_values("R2", ascending=True)
+        fig = px.bar(r, x="R2", y="model", orientation="h", color="RMSE",
+                     color_continuous_scale="Greens_r", text="RMSE",
+                     hover_data=["cv_RMSE", "MAE", "MAPE_%"],
+                     title="R2 (bar) with held-out RMSE (color + label)",
+                     labels={"R2": "R2", "RMSE": "held-out RMSE"})
+        fig.update_traces(texttemplate="%{text:.4f}", textposition="outside")
+        fig.update_layout(template="plotly_white", height=330,
+                          margin=dict(t=40, l=0, r=60))
+        st.plotly_chart(fig, width="stretch")
+        table(r.sort_values("R2", ascending=False), height=260)
+        download(r, "regression_comparison.csv")
+        st.caption("Tree ensembles beat linear models by ~0.08 RMSE - the score "
+                   "depends on interactions (genre x popularity) that linear "
+                   "terms cannot express. The stage-6 blend squeezes a little "
+                   "more by averaging the two forests.")
+    else:
+        st.info("run `python train.py 4` to produce the comparison.")
+
+    st.subheader("C - Clustering: K-Means vs Ward hierarchical")
+    _cube = pd.DataFrame([
+        {"dataset": "Anime (content)",
+         "K-Means": float(REP.get(_mine, "stage5.anime.kmeans_silhouette", 0)),
+         "Ward": float(REP.get(_mine, "stage5.anime.hier_silhouette", 0))},
+        {"dataset": "Users (behaviour)",
+         "K-Means": float(REP.get(_mine, "stage5.users.kmeans_silhouette", 0)),
+         "Ward": float(REP.get(_mine, "stage5.users.hier_silhouette", 0))},
+    ])
+    if _cube[["K-Means", "Ward"]].to_numpy().any():
+        melted = _cube.melt(id_vars="dataset", var_name="algorithm",
+                            value_name="silhouette")
+        fig = px.bar(melted, x="dataset", y="silhouette", color="algorithm",
+                     barmode="group", text_auto=".3f",
+                     color_discrete_sequence=px.colors.qualitative.Set2,
+                     title="Silhouette (higher = tighter, better clusters)")
+        fig.update_layout(template="plotly_white", height=300,
+                          margin=dict(t=40, l=0, r=0))
+        st.plotly_chart(fig, width="stretch")
+        st.caption(f"K-Means wins narrowly on both datasets "
+                   f"(k={REP.get(_mine, 'stage5.anime.k', '-')}/"
+                   f"{REP.get(_mine, 'stage5.users.k', '-')}). Ward earns its "
+                   "place anyway: one run yields the whole dendrogram, so every "
+                   "k from 2 to 8 reads off a single fit - and it is deterministic.")
+    else:
+        st.info("run `python train.py 5` to produce the clustering summary.")
+
+    st.subheader("D - Same answers, less compute - and the deployed blend")
+    a, b = cols(2)
+    with a:
+        if not _bench.empty:
+            m = _bench.melt(id_vars="min_support",
+                            value_vars=["apriori_sec", "fpgrowth_sec"],
+                            var_name="algorithm", value_name="seconds")
+            m["algorithm"] = m["algorithm"].map({"apriori_sec": "Apriori",
+                                                 "fpgrowth_sec": "FP-Growth"})
+            m["min_support"] = m["min_support"].astype(str)
+            fig = px.bar(m, x="min_support", y="seconds", color="algorithm",
+                         barmode="group", text_auto=".3f",
+                         color_discrete_sequence=px.colors.qualitative.Set2,
+                         title="Runtime by min_support (identical itemsets)",
+                         labels={"min_support": "min_support"})
+            fig.update_layout(template="plotly_white", height=300,
+                              margin=dict(t=40, l=0, r=0))
+            st.plotly_chart(fig, width="stretch")
+            st.caption("Same itemset counts at every support - the difference is "
+                       "purely database passes, which is why Apriori wins small "
+                       "and FP-Growth wins big.")
+        else:
+            st.info("run `python train.py 2` to produce the benchmark.")
+    with b:
+        if not _pred.empty:
+            t = _pred[_pred["split"] == "test"].sort_values("RMSE",
+                                                            ascending=True)
+            fig = px.bar(t, x="RMSE", y="model", orientation="h",
+                         color="RMSE", color_continuous_scale="Purples_r",
+                         text="RMSE", title="Deployed blend vs base learners",
+                         labels={"RMSE": "held-out RMSE"})
+            fig.update_traces(texttemplate="%{text:.4f}", textposition="outside")
+            fig.update_layout(template="plotly_white", height=300,
+                              margin=dict(t=40, l=0, r=0))
+            st.plotly_chart(fig, width="stretch")
+            st.caption("The 0.42 RF + 0.58 GB blend (weight fitted on validation, "
+                       "never test) beats both base learners on held-out data.")
+        else:
+            st.info("run `python train.py 6` to produce the predictor metrics.")
