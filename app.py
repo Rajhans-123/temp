@@ -278,8 +278,8 @@ def get_recommender():
 with st.sidebar:
     st.markdown("### DWM Lab")
     st.markdown("*Anime Recommendations Database*")
-    st.caption("Kaggle - CooperUnion (MyAnimeList). 12,294 titles / 73,515 users "
-               "/ 7,813,737 ratings.")
+    st.caption("Kaggle \u2013 CooperUnion (MyAnimeList).")
+    st.caption("12,294\u00a0titles / 73,515\u00a0users / 7,813,737\u00a0ratings.")
     _live = live_feed_status()
     if _live["synced_titles"]:
         st.caption(f"Live feed: Jikan v4 API (MyAnimeList) - "
