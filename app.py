@@ -1224,10 +1224,23 @@ if page == TABS[7]:
                           help="anime_id IS the MyAnimeList id, so rows join 1:1")
     nocache = c2.checkbox("ignore JSON cache, refetch from Jikan",
                           help="bypasses data/live/cache/ for this fetch")
+    _cached = (C.LIVE_CACHE_DIR / f"{int(mid)}.json").exists()
+    if nocache:
+        st.caption("Cache bypassed - this click makes a live network call "
+                   "(~1-3 s normally, up to ~25 s if Jikan is slow). "
+                   "Untick for the instant cached read.")
+    elif _cached:
+        st.caption("Cached locally - this fetch is instant.")
+    else:
+        st.caption("Not cached yet - first fetch makes one live network call "
+                   "(~1-3 s), then it is cached.")
     if st.button("Fetch live row", type="primary"):
+        # interactive fetch: short timeout + single retry so a slow Jikan
+        # fails fast with a warning instead of hanging the spinner.
+        _client = LF.JikanClient(timeout=12, max_retries=1)
         with st.spinner(f"fetching anime {int(mid)} from api.jikan.moe ..."):
             try:
-                payload = LF.JikanClient().fetch(int(mid), use_cache=not nocache)
+                payload = _client.fetch(int(mid), use_cache=not nocache)
                 norm = LF.normalize(payload)
             except Exception as e:  # noqa: BLE001 - show, don't crash the page
                 st.warning(f"Jikan request failed ({type(e).__name__}: {e}). "
