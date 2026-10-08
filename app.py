@@ -1166,8 +1166,8 @@ if page == TABS[7]:
     st.caption("The batch pipeline trains on `data/raw/anime.csv`. The live feed "
                "refreshes that file from MyAnimeList through the free Tenrai API "
                "and the weekly retrain rebuilds + retrains on the fresher input. "
-               "This page only reads sync state and fetches single live rows - "
-               "it never rewrites your data.")
+               "Fetching a row is read-only - the Sync button under the diff is "
+               "what writes `anime.csv` and appends to the score history.")
 
     try:
         _names = (pd.read_csv(C.RAW_ANIME, usecols=["anime_id", "name"])
@@ -1234,10 +1234,10 @@ if page == TABS[7]:
     else:
         st.caption("Not cached yet - first fetch makes one live network call "
                    "(~1-3 s), then it is cached.")
+    # interactive client: short timeout + single retry so a slow API
+    # fails fast with a warning instead of hanging the spinner.
+    _client = LF.JikanClient(timeout=12, max_retries=1)
     if st.button("Fetch live row", type="primary"):
-        # interactive fetch: short timeout + single retry so a slow API
-        # fails fast with a warning instead of hanging the spinner.
-        _client = LF.JikanClient(timeout=12, max_retries=1)
         with st.spinner(f"fetching anime {int(mid)} from api.tenrai.org ..."):
             try:
                 payload = _client.fetch(int(mid), use_cache=not nocache)
@@ -1247,41 +1247,68 @@ if page == TABS[7]:
                            "Check your connection and retry - nothing was written.")
                 payload, norm = None, None
         if norm is not None:
-            local = pd.read_csv(C.RAW_ANIME)
-            hit = local[local["anime_id"] == int(mid)]
+            # stash in session state so the diff + sync buttons below survive
+            # reruns (a clicked button resets to False on the next run).
+            st.session_state["live_demo"] = {"mid": int(mid), "payload": payload,
+                                             "norm": norm}
+    demo = st.session_state.get("live_demo")
+    if demo is not None:
+        _dmid, payload, norm = demo["mid"], demo["payload"], demo["norm"]
+        if _dmid != int(mid):
+            st.caption(f"showing last fetched id {_dmid} - change the id above "
+                       "and fetch again to refresh.")
+        local = pd.read_csv(C.RAW_ANIME)
+        hit = local[local["anime_id"] == _dmid]
 
-            def _show(v) -> str:
-                # plain strings only: mixed numpy scalars in an object
-                # column break Arrow serialization in st.dataframe.
-                if v is None or (not isinstance(v, str) and pd.isna(v)):
-                    return "-"
-                if isinstance(v, np.generic):
-                    v = v.item()
-                return str(v)
+        def _show(v) -> str:
+            # plain strings only: mixed numpy scalars in an object
+            # column break Arrow serialization in st.dataframe.
+            if v is None or (not isinstance(v, str) and pd.isna(v)):
+                return "-"
+            if isinstance(v, np.generic):
+                v = v.item()
+            return str(v)
 
-            rows = []
-            for f in ("genre", "type", "episodes", "rating", "members"):
-                lv = hit.iloc[0][f] if not hit.empty else "-"
-                rv = norm["row"][f] if norm["row"][f] is not None else "-"
-                rows.append({"field": f, "local anime.csv": _show(lv),
-                             "live Tenrai": _show(rv),
-                             "would update": "yes" if (not hit.empty and str(lv) != str(rv)
-                                                       and LF._valid(f, norm["row"][f])) else "-"})
-            st.markdown(f"**{_label(int(mid))}**")
-            table(pd.DataFrame(rows), height=230)
-            a, b2 = cols(2)
-            kpi("scored_by (voters)", f"{norm['extras'].get('scored_by') or '-'}",
-                "history-only field, never in anime.csv")
-            kpi("favorites", f"{norm['extras'].get('favorites') or '-'}",
-                "history-only field, never in anime.csv")
-            if hit.empty:
-                st.info("Not in your local catalog - persisting needs "
-                        f"`python sync_jikan.py --ids {int(mid)} --allow-new`.")
+        rows = []
+        for f in ("genre", "type", "episodes", "rating", "members"):
+            lv = hit.iloc[0][f] if not hit.empty else "-"
+            rv = norm["row"][f] if norm["row"][f] is not None else "-"
+            rows.append({"field": f, "local anime.csv": _show(lv),
+                         "live Tenrai": _show(rv),
+                         "would update": "yes" if (not hit.empty and str(lv) != str(rv)
+                                                   and LF._valid(f, norm["row"][f])) else "-"})
+        st.markdown(f"**{_label(_dmid)}**")
+        table(pd.DataFrame(rows), height=230)
+        a, b2 = cols(2)
+        kpi("scored_by (voters)", f"{norm['extras'].get('scored_by') or '-'}",
+            "history-only field, never in anime.csv")
+        kpi("favorites", f"{norm['extras'].get('favorites') or '-'}",
+            "history-only field, never in anime.csv")
+        _msg = st.session_state.pop("live_sync_msg", None)
+        if _msg:
+            st.success(_msg)
+        if st.button("Sync this title (update anime.csv + score history)",
+                     key="sync_live_title"):
+            with st.spinner(f"syncing anime {_dmid} ..."):
+                _name = (payload.get("title_english") or payload.get("title")
+                         or f"MAL {_dmid}")
+                rep = LF.sync([_dmid], client=_client, allow_new=True,
+                              name_overrides={_dmid: str(_name)})
+            if rep["changed"]:
+                st.session_state["live_sync_msg"] = (
+                    f"synced - {', '.join(sorted(rep['fields']))} updated, "
+                    f"snapshot appended to data/live/score_history.csv. "
+                    f"Re-run `python build_dataset.py && python train.py` "
+                    f"to retrain on it.")
             else:
-                st.caption(f"Persist with `python sync_jikan.py --ids {int(mid)}`, "
-                           "then `python build_dataset.py && python train.py` - or "
-                           f"`python retrain_weekly.py --ids {int(mid)}` for all three steps.")
-            with st.expander("raw API payload (trimmed)"):
+                st.session_state["live_sync_msg"] = (
+                    "already up to date - snapshot appended, nothing changed.")
+            st.rerun()
+        st.caption("Syncing appends a snapshot row and refreshes the trend in "
+                   "section A above. Retrain after with "
+                   "`python build_dataset.py && python train.py` - or "
+                   "`python retrain_weekly.py --skip-sync` for all stages.")
+        with st.expander("raw API payload (trimmed)"):
                 trim = {k: payload.get(k) for k in
                         ("mal_id", "title", "title_english", "type", "episodes",
                          "status", "score", "scored_by", "members", "favorites",
