@@ -86,5 +86,6 @@ JIKAN_MAX_RETRIES = 3      # retries on HTTP 429 / 5xx with backoff
 
 
 def ensure_dirs() -> None:
-    for d in (RAW_DIR, PROC_DIR, MODEL_DIR, REPORT_DIR, FIG_DIR):
+    for d in (RAW_DIR, PROC_DIR, MODEL_DIR, REPORT_DIR, FIG_DIR,
+              LIVE_DIR, LIVE_CACHE_DIR):
         d.mkdir(parents=True, exist_ok=True)

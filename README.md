@@ -320,3 +320,35 @@ unknown ids are skipped unless `--allow-new`; every run writes
 `data/live/score_history.csv` (append-only snapshots for retraining) and
 `data/live/last_sync.csv`, keeps one `.bak` of anime.csv, and respects the
 3 req/s Jikan limit with retries + a JSON cache under `data/live/cache/`.
+
+### Weekly retrain
+
+`retrain_weekly.py` chains the three steps (sync -> rebuild -> retrain) and
+appends one row per run to `reports/retrain_log.csv`:
+
+```bash
+python retrain_weekly.py                    # weekly default: titles stale 7d, stages 2-6
+python retrain_weekly.py --top 200          # refresh 200 most-membered instead
+python retrain_weekly.py --stages 6         # only the predictor stage
+python retrain_weekly.py --skip-sync        # retrain on current CSVs, no network
+python retrain_weekly.py --dry-run          # select ids only, no I/O
+python retrain_weekly.py --force            # retrain even if 0 titles changed
+```
+
+Quiet weeks cost nothing: if fewer than `--min-changed` titles changed, the
+rebuild is skipped (override with `--force`). Without the 1 GB `ratings.csv`
+(e.g. CI) only anime-derived tables are rebuilt and each train stage runs in
+isolation, so one stage failing never stops the rest.
+
+Schedule it:
+
+* **GitHub Actions** - `.github/workflows/weekly-retrain.yml` runs every
+  Monday 03:00 UTC (plus manual dispatch with the same knobs) and commits
+  back `reports/retrain_log.csv`, `reports/mining_summary.csv` and the
+  `data/live/` state.
+* **Windows** - `weekly_task.ps1` registers the same job in Task Scheduler:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File weekly_task.ps1 -Action install
+powershell -ExecutionPolicy Bypass -File weekly_task.ps1 -Action run  # run once now
+```

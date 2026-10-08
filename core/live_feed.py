@@ -165,6 +165,16 @@ def upsert(anime: pd.DataFrame, norm: dict, allow_new: bool = False,
     """
     row = norm["row"]
     changes: dict = {}
+    # pandas 3 infers arrow-string dtypes; assigning an int (episodes) or
+    # float (rating/members) into a str column then raises TypeError, so
+    # relax the mutable columns to object dtype before upserting.
+    for col in ("genre", "type", "episodes", "rating", "members"):
+        if col in anime.columns:
+            try:
+                if pd.api.types.is_string_dtype(anime[col].dtype):
+                    anime[col] = anime[col].astype(object)
+            except TypeError:
+                pass
     hit = anime.index[anime["anime_id"] == row["anime_id"]]
     if len(hit) == 0:
         if not allow_new or not default_name:

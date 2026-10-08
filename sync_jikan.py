@@ -79,6 +79,13 @@ def self_test() -> int:
                "extras": {}}
         df = pd.read_csv(csv)
         # NOTE: upsert works in place on the passed frame; reload fixture state
+        # pandas 3 infers arrow-string dtypes, so relax before assigning ints.
+        for col in ("genre", "type", "episodes", "rating", "members"):
+            try:
+                if pd.api.types.is_string_dtype(df[col].dtype):
+                    df[col] = df[col].astype(object)
+            except TypeError:
+                pass
         df.loc[0, ["genre", "episodes", "rating", "members"]] = [
             "Action", 26, 8.75, 1723456]
         changed2, _ = LF.upsert(df, bad)
