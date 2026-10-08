@@ -287,7 +287,9 @@ with st.sidebar:
                    f"{_live['synced_titles']:,} titles refreshed "
                    f"(last sync {_live['last_sync']}).")
     else:
-        st.caption("Live feed: Jikan v4 API (MyAnimeList) - not synced yet.")
+        st.caption("Live feed: Jikan v4 API (MyAnimeList) \u2013 fetching live. "
+                   "Try the single-title demo in 8 - Live Feed; bulk refresh with "
+                   "`python sync_jikan.py --top 200`.")
     st.divider()
     st.markdown("**Pipeline**")
     st.markdown(
@@ -350,9 +352,10 @@ if page == TABS[0]:
     else:
         st.info(
             "Static base: Kaggle - CooperUnion (MyAnimeList scrape). "
-            "No live refresh yet - run `python sync_jikan.py --top 200` to "
+            "No bulk refresh yet - run `python sync_jikan.py --top 200` to "
             "pull live scores/members from the free **Jikan v4 API** "
-            "(api.jikan.moe, MyAnimeList data, no key needed)."
+            "(api.jikan.moe, MyAnimeList data, no key needed), or try a "
+            "single-title live fetch on the **8 - Live Feed** page."
         )
     a, b = cols(2)
     with a:
