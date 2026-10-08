@@ -19,6 +19,7 @@ from core import association as A
 from core import classification as CL
 from core import clustering as CLC
 from core import config as C
+from core import live_feed as LF
 from core import predictor as PRED
 from core import preprocessing as P
 from core import regression as R
@@ -306,7 +307,7 @@ with st.sidebar:
 
 TABS = ["1 - Overview", "2 - Preprocessing", "3 - Association Rules",
         "4 - Classification", "5 - Regression", "6 - Clustering",
-        "7 - Prediction System"]
+        "7 - Prediction System", "8 - Live Feed"]
 # NOTE: sidebar navigation (not st.tabs) is intentional for Streamlit Cloud.
 # st.tabs executes *every* tab's block on each rerun, so opening the app would
 # simultaneously train classifiers + regressors + K-Means on 69k users and blow
@@ -1154,3 +1155,111 @@ if page == TABS[6]:
         st.success(f"done - best model {res['best']}, RMSE {res['sigma']:.4f}")
         st.dataframe(res["metrics"], width="stretch")
         st.rerun()
+
+
+# ======================================================== 8 LIVE FEED =======
+if page == TABS[7]:
+    st.title("Live Feed - Jikan v4 API (MyAnimeList)")
+    st.caption("The batch pipeline trains on `data/raw/anime.csv`. The live feed "
+               "refreshes that file from MyAnimeList through the free Jikan API, "
+               "and the weekly retrain rebuilds + retrains on the fresher input. "
+               "This page only reads sync state and fetches single live rows - "
+               "it never rewrites your data.")
+
+    try:
+        _names = (pd.read_csv(C.RAW_ANIME, usecols=["anime_id", "name"])
+                  .set_index("anime_id")["name"].to_dict())
+    except Exception:
+        _names = {}
+
+    def _label(mid: int) -> str:
+        return f"{mid} - {_names.get(int(mid), 'unknown title')}"
+
+    live = live_feed_status()
+    log = read_report("retrain_log.csv")
+    last = log.iloc[-1].to_dict() if not log.empty else {}
+    with cols(3):
+        kpi("titles refreshed", f"{live['synced_titles']:,}",
+            f"last sync {live['last_sync'] or 'never'}")
+        kpi("score snapshots", f"{live['snapshots']:,}",
+            "data/live/score_history.csv")
+        if last:
+            kpi("last weekly run", str(last.get("run_at", ""))[:10],
+                f"stages {last.get('stages_ok', '-')} in {last.get('duration_s', '?')}s")
+        else:
+            kpi("weekly retrain", "not run yet", "python retrain_weekly.py")
+
+    st.subheader("A - Score history (what the retrain learns from)")
+    if C.LIVE_HISTORY.exists():
+        hist = pd.read_csv(C.LIVE_HISTORY, parse_dates=["fetched_at"])
+        ids = sorted(hist["anime_id"].unique().tolist())
+        pick = st.selectbox("Title", ids, format_func=_label)
+        sub = hist[hist["anime_id"] == pick].sort_values("fetched_at")
+        a, b = cols(2)
+        with a:
+            fig = px.line(sub, x="fetched_at", y="rating", markers=True,
+                          title="Community score over syncs")
+            fig.update_layout(height=280, margin=dict(t=40, l=0, r=0))
+            st.plotly_chart(fig, width="stretch")
+        with b:
+            fig = px.line(sub, x="fetched_at", y="members", markers=True,
+                          title="Community members over syncs")
+            fig.update_layout(height=280, margin=dict(t=40, l=0, r=0))
+            st.plotly_chart(fig, width="stretch")
+        table(sub.sort_values("fetched_at", ascending=False), height=250)
+        download(sub, "score_history_title.csv")
+    else:
+        st.info("No snapshots yet - run `python sync_jikan.py --top 200` to pull "
+                "live scores/members, then revisit this tab for the trend.")
+
+    st.subheader("B - Live row demo (fetch one title from Jikan)")
+    st.caption("Fetches `GET /anime/{id}`, maps it onto the 7-column anime.csv "
+               "schema, and diffs it against your local row. Repeat fetches are "
+               "served from the JSON cache under `data/live/cache/` (gitignored).")
+    c1, c2 = cols([1, 2])
+    mid = c1.number_input("MyAnimeList id", min_value=1, value=1, step=1,
+                          help="anime_id IS the MyAnimeList id, so rows join 1:1")
+    nocache = c2.checkbox("ignore JSON cache, refetch from Jikan",
+                          help="bypasses data/live/cache/ for this fetch")
+    if st.button("Fetch live row", type="primary"):
+        with st.spinner(f"fetching anime {int(mid)} from api.jikan.moe ..."):
+            try:
+                payload = LF.JikanClient().fetch(int(mid), use_cache=not nocache)
+                norm = LF.normalize(payload)
+            except Exception as e:  # noqa: BLE001 - show, don't crash the page
+                st.warning(f"Jikan request failed ({type(e).__name__}: {e}). "
+                           "Check your connection and retry - nothing was written.")
+                payload, norm = None, None
+        if norm is not None:
+            local = pd.read_csv(C.RAW_ANIME)
+            hit = local[local["anime_id"] == int(mid)]
+            rows = []
+            for f in ("genre", "type", "episodes", "rating", "members"):
+                lv = hit.iloc[0][f] if not hit.empty else "-"
+                rv = norm["row"][f] if norm["row"][f] is not None else "-"
+                rows.append({"field": f, "local anime.csv": lv,
+                             "live Jikan": rv,
+                             "would update": "yes" if (not hit.empty and str(lv) != str(rv)
+                                                       and LF._valid(f, norm["row"][f])) else "-"})
+            st.markdown(f"**{_label(int(mid))}**")
+            table(pd.DataFrame(rows), height=230)
+            a, b2 = cols(2)
+            kpi("scored_by (voters)", f"{norm['extras'].get('scored_by') or '-'}",
+                "history-only field, never in anime.csv")
+            kpi("favorites", f"{norm['extras'].get('favorites') or '-'}",
+                "history-only field, never in anime.csv")
+            if hit.empty:
+                st.info("Not in your local catalog - persisting needs "
+                        f"`python sync_jikan.py --ids {int(mid)} --allow-new`.")
+            else:
+                st.caption(f"Persist with `python sync_jikan.py --ids {int(mid)}`, "
+                           "then `python build_dataset.py && python train.py` - or "
+                           f"`python retrain_weekly.py --ids {int(mid)}` for all three steps.")
+            with st.expander("raw Jikan payload (trimmed)"):
+                trim = {k: payload.get(k) for k in
+                        ("mal_id", "title", "title_english", "type", "episodes",
+                         "status", "score", "scored_by", "members", "favorites",
+                         "year", "season")}
+                trim["genres"] = [(g or {}).get("name")
+                                  for g in (payload.get("genres") or [])]
+                st.json(trim)
