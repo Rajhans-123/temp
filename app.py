@@ -502,44 +502,65 @@ with tab[2]:
                        "bubble size is how much stronger than chance the rule is.")
 
     st.subheader("Rule base B - user basket (transaction = user, item = top-12 anime rated >= 8)")
-    c1, c2, c3, c4 = cols(4)
-    ums = c1.slider("min support", 0.01, 0.20, 0.03, 0.01, key="ums")
-    umc = c2.slider("min confidence", 0.10, 0.90, 0.25, 0.05, key="umc")
-    uml = c3.slider("min lift", 1.0, 8.0, 1.5, 0.5, key="uml")
-    if c4.button("re-mine", key="remine_user"):
-        get_user_rules.clear()
-    ur = get_user_rules(ums, umc, uml)
-    a, b = cols([1.6, 1])
-    with a:
-        st.markdown(f"**{len(ur)} anime-to-anime rules** - these drive the "
+    HAS_USER_BASKETS = C.BASKET_USER.exists()
+    if not HAS_USER_BASKETS:
+        st.warning(
+            "`data/processed/baskets_user.csv` is missing - it is gitignored and "
+            "needs the 1 GB `ratings.csv` to rebuild (`python build_dataset.py`). "
+            "Showing the precomputed rule set instead; sliders and re-mining are "
+            "disabled until the file exists."
+        )
+        ur = read_report("association_rules_user.csv")
+        st.markdown(f"**{len(ur)} anime-to-anime rules (precomputed)** - these drive the "
                     "recommender in the prediction tab")
         table(ur, height=300)
         if not ur.empty:
             download(ur, "association_rules_user.csv")
-    with b:
-        baskets = get_baskets()
-        st.markdown("**Basket statistics**")
-        kpi("users (transactions)", f"{len(baskets):,}")
-        kpi("avg items / basket", f"{baskets['n'].mean():.1f}",
-            f"max {baskets['n'].max()}")
-        st.markdown("")
-        fig = px.histogram(baskets, x="n", nbins=20, title="Items per basket")
-        fig.update_layout(height=250, margin=dict(t=40, l=0, r=0))
-        st.plotly_chart(fig, width="stretch")
+    else:
+        c1, c2, c3, c4 = cols(4)
+        ums = c1.slider("min support", 0.01, 0.20, 0.03, 0.01, key="ums")
+        umc = c2.slider("min confidence", 0.10, 0.90, 0.25, 0.05, key="umc")
+        uml = c3.slider("min lift", 1.0, 8.0, 1.5, 0.5, key="uml")
+        if c4.button("re-mine", key="remine_user"):
+            get_user_rules.clear()
+        ur = get_user_rules(ums, umc, uml)
+        a, b = cols([1.6, 1])
+        with a:
+            st.markdown(f"**{len(ur)} anime-to-anime rules** - these drive the "
+                        "recommender in the prediction tab")
+            table(ur, height=300)
+            if not ur.empty:
+                download(ur, "association_rules_user.csv")
+        with b:
+            baskets = get_baskets()
+            st.markdown("**Basket statistics**")
+            kpi("users (transactions)", f"{len(baskets):,}")
+            kpi("avg items / basket", f"{baskets['n'].mean():.1f}",
+                f"max {baskets['n'].max()}")
+            st.markdown("")
+            fig = px.histogram(baskets, x="n", nbins=20, title="Items per basket")
+            fig.update_layout(height=250, margin=dict(t=40, l=0, r=0))
+            st.plotly_chart(fig, width="stretch")
 
     st.subheader("Apriori vs FP-Growth")
     st.caption("Both algorithms produce the identical itemset count; the "
                "difference is the number of database passes they need.")
-    bench = A.apriori_vs_fpgrowth()
-    a, b = cols([1.2, 1])
-    with a:
+    if not HAS_USER_BASKETS:
+        st.warning("Live timing needs `baskets_user.csv` - showing the precomputed "
+                   "benchmark instead.")
+        bench = read_report("apriori_vs_fpgrowth.csv")
         table(bench, height=230)
-    with b:
-        fig = px.bar(bench, x="min_support", y=["apriori_sec", "fpgrowth_sec"],
-                     barmode="group", labels={"value": "seconds", "variable": "algorithm"},
-                     title="Runtime by min_support (same itemsets)")
-        fig.update_layout(height=280, margin=dict(t=40, l=0, r=0))
-        st.plotly_chart(fig, width="stretch")
+    else:
+        bench = A.apriori_vs_fpgrowth()
+        a, b = cols([1.2, 1])
+        with a:
+            table(bench, height=230)
+        with b:
+            fig = px.bar(bench, x="min_support", y=["apriori_sec", "fpgrowth_sec"],
+                         barmode="group", labels={"value": "seconds", "variable": "algorithm"},
+                         title="Runtime by min_support (same itemsets)")
+            fig.update_layout(height=280, margin=dict(t=40, l=0, r=0))
+            st.plotly_chart(fig, width="stretch")
     st.caption("At this basket size Apriori wins on wall clock; FP-Growth's "
                "advantage appears once the itemset count explodes, because it never "
                "generates a candidate set it has not already confirmed in the tree.")
