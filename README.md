@@ -259,9 +259,8 @@ processed tables.
 
 The app's **8 - Live Feed** tab is the UI demo for this feed: sync status KPIs
 (last sync, snapshot count, last weekly run), the per-title score/member trend
-from `data/live/score_history.csv`, and a single-title live fetch that diffs
-the Tenrai row against the local `anime.csv` row (read-only; persisting is done
-via the CLI commands shown on the tab).
+from `data/live/score_history.csv`, and a single-title fetch-and-sync demo that
+diffs the live Tenrai row and writes `anime.csv` plus the score history.
 
 ---
 

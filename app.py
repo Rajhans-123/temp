@@ -1166,8 +1166,8 @@ if page == TABS[7]:
     st.caption("The batch pipeline trains on `data/raw/anime.csv`. The live feed "
                "refreshes that file from MyAnimeList through the free Tenrai API "
                "and the weekly retrain rebuilds + retrains on the fresher input. "
-               "Fetching a row is read-only - the Sync button under the diff is "
-               "what writes `anime.csv` and appends to the score history.")
+               "The button below pulls one live row and syncs it straight into "
+               "`anime.csv` plus the score history.")
 
     try:
         _names = (pd.read_csv(C.RAW_ANIME, usecols=["anime_id", "name"])
@@ -1209,15 +1209,25 @@ if page == TABS[7]:
                           title="Community members over syncs")
             fig.update_layout(height=280, margin=dict(t=40, l=0, r=0))
             st.plotly_chart(fig, width="stretch")
-        table(sub.sort_values("fetched_at", ascending=False), height=250)
+        # display copy with human formatting (counts as ints, rating 2dp);
+        # the download below keeps the raw numeric CSV.
+        show = sub.sort_values("fetched_at", ascending=False).copy()
+        show["fetched_at"] = show["fetched_at"].astype(str)
+        for c in ("anime_id", "members", "scored_by", "favorites", "episodes"):
+            show[c] = (pd.to_numeric(show[c], errors="coerce")
+                       .round(0).astype("Int64").astype(str))
+        show["rating"] = (pd.to_numeric(show["rating"], errors="coerce")
+                          .round(2).astype(str))
+        table(show, height=250)
         download(sub, "score_history_title.csv")
     else:
         st.info("No snapshots yet - run `python sync_jikan.py --top 200` to pull "
                 "live scores/members, then revisit this tab for the trend.")
 
-    st.subheader("B - Live row demo (fetch one title from Tenrai)")
-    st.caption("Fetches `GET /anime/{id}`, maps it onto the 7-column anime.csv "
-               "schema, and diffs it against your local row. Repeat fetches are "
+    st.subheader("B - Live row demo (fetch + sync one title)")
+    st.caption("Fetches `GET /anime/{id}`, syncs it immediately (upserts "
+               "`anime.csv` with a `.bak` backup, appends a snapshot row), then "
+               "diffs the pre-sync row against the live values. Repeat fetches are "
                "served from the JSON cache under `data/live/cache/` (gitignored).")
     c1, c2 = cols([1, 2])
     mid = c1.number_input("MyAnimeList id", min_value=1, value=1, step=1,
@@ -1237,7 +1247,7 @@ if page == TABS[7]:
     # interactive client: short timeout + single retry so a slow API
     # fails fast with a warning instead of hanging the spinner.
     _client = LF.JikanClient(timeout=12, max_retries=1)
-    if st.button("Fetch live row", type="primary"):
+    if st.button("Fetch + sync live row", type="primary"):
         with st.spinner(f"fetching anime {int(mid)} from api.tenrai.org ..."):
             try:
                 payload = _client.fetch(int(mid), use_cache=not nocache)
@@ -1247,18 +1257,42 @@ if page == TABS[7]:
                            "Check your connection and retry - nothing was written.")
                 payload, norm = None, None
         if norm is not None:
-            # stash in session state so the diff + sync buttons below survive
-            # reruns (a clicked button resets to False on the next run).
-            st.session_state["live_demo"] = {"mid": int(mid), "payload": payload,
-                                             "norm": norm}
+            # capture the pre-sync row so the diff below shows what changed,
+            # then sync immediately: upsert anime.csv (.bak kept) + append
+            # the snapshot row. The sync reuses the just-written JSON cache,
+            # so there is no second network call.
+            pre = pd.read_csv(C.RAW_ANIME)
+            pre_hit = pre[pre["anime_id"] == int(mid)]
+            with st.spinner(f"syncing anime {int(mid)} into anime.csv + history ..."):
+                _name = (payload.get("title_english") or payload.get("title")
+                         or f"MAL {int(mid)}")
+                rep = LF.sync([int(mid)], client=_client, allow_new=True,
+                              name_overrides={int(mid): str(_name)})
+            if rep["changed"]:
+                msg = (f"synced - {', '.join(sorted(rep['fields']))} updated, "
+                       f"snapshot appended to data/live/score_history.csv.")
+            else:
+                msg = "already up to date - snapshot appended, nothing changed."
+            st.session_state["live_demo"] = {
+                "mid": int(mid), "payload": payload, "norm": norm, "msg": msg,
+                "pre_row": (pre_hit.iloc[0].to_dict()
+                            if not pre_hit.empty else None), "fresh": True}
     demo = st.session_state.get("live_demo")
     if demo is not None:
         _dmid, payload, norm = demo["mid"], demo["payload"], demo["norm"]
         if _dmid != int(mid):
-            st.caption(f"showing last fetched id {_dmid} - change the id above "
+            st.caption(f"showing last synced id {_dmid} - change the id above "
                        "and fetch again to refresh.")
-        local = pd.read_csv(C.RAW_ANIME)
-        hit = local[local["anime_id"] == _dmid]
+        # one-shot extras: the message and the pre-sync row are consumed on
+        # first render so later reruns show the current on-disk state.
+        msg = demo.pop("msg", None)
+        if msg:
+            st.success(msg)
+        if demo.pop("fresh", False) and demo.get("pre_row") is not None:
+            hit = pd.DataFrame([demo["pre_row"]])
+        else:
+            local = pd.read_csv(C.RAW_ANIME)
+            hit = local[local["anime_id"] == _dmid]
 
         def _show(v) -> str:
             # plain strings only: mixed numpy scalars in an object
@@ -1284,30 +1318,9 @@ if page == TABS[7]:
             "history-only field, never in anime.csv")
         kpi("favorites", f"{norm['extras'].get('favorites') or '-'}",
             "history-only field, never in anime.csv")
-        _msg = st.session_state.pop("live_sync_msg", None)
-        if _msg:
-            st.success(_msg)
-        if st.button("Sync this title (update anime.csv + score history)",
-                     key="sync_live_title"):
-            with st.spinner(f"syncing anime {_dmid} ..."):
-                _name = (payload.get("title_english") or payload.get("title")
-                         or f"MAL {_dmid}")
-                rep = LF.sync([_dmid], client=_client, allow_new=True,
-                              name_overrides={_dmid: str(_name)})
-            if rep["changed"]:
-                st.session_state["live_sync_msg"] = (
-                    f"synced - {', '.join(sorted(rep['fields']))} updated, "
-                    f"snapshot appended to data/live/score_history.csv. "
-                    f"Re-run `python build_dataset.py && python train.py` "
-                    f"to retrain on it.")
-            else:
-                st.session_state["live_sync_msg"] = (
-                    "already up to date - snapshot appended, nothing changed.")
-            st.rerun()
-        st.caption("Syncing appends a snapshot row and refreshes the trend in "
-                   "section A above. Retrain after with "
-                   "`python build_dataset.py && python train.py` - or "
-                   "`python retrain_weekly.py --skip-sync` for all stages.")
+        st.caption("The trend in section A above already includes this sync. "
+                   "Retrain after with `python build_dataset.py && python train.py` - "
+                   "or `python retrain_weekly.py --skip-sync` for all stages.")
         with st.expander("raw API payload (trimmed)"):
                 trim = {k: payload.get(k) for k in
                         ("mal_id", "title", "title_english", "type", "episodes",
