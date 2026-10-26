@@ -194,101 +194,6 @@ stage3.best,Random Forest
 stage3.best_accuracy,0.5864
 stage4.best,Gradient Boosting
 stage4.metrics[0].model,Gradient Boosting
-stage4.metrics[0].cv_RMSE,0.6263
-stage4.metrics[0].MAE,0.4653
-stage4.metrics[0].RMSE,0.6367
-stage4.metrics[0].R2,0.6054
-stage4.metrics[0].MAPE_%,7.941
-stage4.metrics[1].model,Random Forest
-stage4.metrics[1].cv_RMSE,0.6365
-stage4.metrics[1].MAE,0.4748
-stage4.metrics[1].RMSE,0.6507
-stage4.metrics[1].R2,0.5878
-stage4.metrics[1].MAPE_%,8.068
-stage4.metrics[2].model,Decision Tree
-stage4.metrics[2].cv_RMSE,0.665
-stage4.metrics[2].MAE,0.496
-stage4.metrics[2].RMSE,0.6767
-stage4.metrics[2].R2,0.5542
-stage4.metrics[2].MAPE_%,8.462
-stage4.metrics[3].model,Linear Regression
-stage4.metrics[3].cv_RMSE,0.6922
-stage4.metrics[3].MAE,0.5362
-stage4.metrics[3].RMSE,0.7219
-stage4.metrics[3].R2,0.4927
-stage4.metrics[3].MAPE_%,9.241
-stage4.metrics[4].model,Ridge (alpha=1)
-stage4.metrics[4].cv_RMSE,0.6921
-stage4.metrics[4].MAE,0.5362
-stage4.metrics[4].RMSE,0.7219
-stage4.metrics[4].R2,0.4927
-stage4.metrics[4].MAPE_%,9.242
-stage4.metrics[5].model,Mean baseline
-stage4.metrics[5].cv_RMSE,0.9769
-stage4.metrics[5].MAE,0.7884
-stage4.metrics[5].RMSE,1.0136
-stage4.metrics[5].R2,-0.0001
-stage4.metrics[5].MAPE_%,13.554
-stage4.importance[0].attribute,members
-stage4.importance[0].importance,0.3287
-stage4.importance[0].rank,1
-stage4.importance[0].cumulative,0.3287
-stage4.importance[1].attribute,members_log
-stage4.importance[1].importance,0.3158
-stage4.importance[1].rank,2
-stage4.importance[1].cumulative,0.6445
-stage4.importance[2].attribute,members_per_episode
-stage4.importance[2].importance,0.0967
-stage4.importance[2].rank,3
-stage4.importance[2].cumulative,0.7412
-stage4.importance[3].attribute,primary_genre
-stage4.importance[3].importance,0.0769
-stage4.importance[3].rank,4
-stage4.importance[3].cumulative,0.8181
-stage4.importance[4].attribute,type
-stage4.importance[4].importance,0.0516
-stage4.importance[4].rank,5
-stage4.importance[4].cumulative,0.8697
-stage4.importance[5].attribute,genre_count
-stage4.importance[5].importance,0.0382
-stage4.importance[5].rank,6
-stage4.importance[5].cumulative,0.9079
-stage4.importance[6].attribute,episodes_log
-stage4.importance[6].importance,0.0299
-stage4.importance[6].rank,7
-stage4.importance[6].cumulative,0.9378
-stage4.importance[7].attribute,episodes
-stage4.importance[7].importance,0.0293
-stage4.importance[7].rank,8
-stage4.importance[7].cumulative,0.9671
-stage4.importance[8].attribute,is_shounen
-stage4.importance[8].importance,0.012
-stage4.importance[8].rank,9
-stage4.importance[8].cumulative,0.9791
-stage4.importance[9].attribute,is_multi_genre
-stage4.importance[9].importance,0.0066
-stage4.importance[9].rank,10
-stage4.importance[9].cumulative,0.9857
-stage5.anime.k,4
-stage5.anime.why,"elbow(knee)=4, silhouette-max=5"
-stage5.anime.rows,12294
-stage5.anime.kmeans_silhouette,0.3419
-stage5.anime.hier_silhouette,0.3193
-stage5.anime.sizes.0,4038
-stage5.anime.sizes.1,2862
-stage5.anime.sizes.2,3657
-stage5.anime.sizes.3,1737
-stage5.users.k,5
-stage5.users.why,"elbow(knee)=5, silhouette-max=4"
-stage5.users.rows,69600
-stage5.users.kmeans_silhouette,0.2764
-stage5.users.hier_silhouette,0.22
-stage5.users.sizes.0,1834
-stage5.users.sizes.1,29373
-stage5.users.sizes.2,19350
-stage5.users.sizes.3,14188
-stage5.users.sizes.4,4855
-stage4.metrics[0].model,Gradient Boosting
 stage4.metrics[0].cv_RMSE,0.6161
 stage4.metrics[0].MAE,0.4591
 stage4.metrics[0].RMSE,0.6299
@@ -364,6 +269,101 @@ stage4.importance[9].attribute,is_multi_genre
 stage4.importance[9].importance,0.0073
 stage4.importance[9].rank,10
 stage4.importance[9].cumulative,0.9864
+stage5.anime.k,4
+stage5.anime.why,"elbow(knee)=4, silhouette-max=5"
+stage5.anime.rows,12294
+stage5.anime.kmeans_silhouette,0.3421
+stage5.anime.hier_silhouette,0.3214
+stage5.anime.sizes.0,3620
+stage5.anime.sizes.1,2860
+stage5.anime.sizes.2,4065
+stage5.anime.sizes.3,1749
+stage5.users.k,5
+stage5.users.why,"elbow(knee)=5, silhouette-max=4"
+stage5.users.rows,69600
+stage5.users.kmeans_silhouette,0.2764
+stage5.users.hier_silhouette,0.22
+stage5.users.sizes.0,1834
+stage5.users.sizes.1,29373
+stage5.users.sizes.2,19350
+stage5.users.sizes.3,14188
+stage5.users.sizes.4,4855
+stage4.metrics[0].model,Gradient Boosting
+stage4.metrics[0].cv_RMSE,0.6175
+stage4.metrics[0].MAE,0.4607
+stage4.metrics[0].RMSE,0.632
+stage4.metrics[0].R2,0.605
+stage4.metrics[0].MAPE_%,7.883
+stage4.metrics[1].model,Random Forest
+stage4.metrics[1].cv_RMSE,0.627
+stage4.metrics[1].MAE,0.4683
+stage4.metrics[1].RMSE,0.6439
+stage4.metrics[1].R2,0.59
+stage4.metrics[1].MAPE_%,7.976
+stage4.metrics[2].model,Decision Tree
+stage4.metrics[2].cv_RMSE,0.6546
+stage4.metrics[2].MAE,0.4896
+stage4.metrics[2].RMSE,0.6705
+stage4.metrics[2].R2,0.5555
+stage4.metrics[2].MAPE_%,8.371
+stage4.metrics[3].model,Ridge (alpha=1)
+stage4.metrics[3].cv_RMSE,0.6839
+stage4.metrics[3].MAE,0.5292
+stage4.metrics[3].RMSE,0.7147
+stage4.metrics[3].R2,0.4948
+stage4.metrics[3].MAPE_%,9.147
+stage4.metrics[4].model,Linear Regression
+stage4.metrics[4].cv_RMSE,0.6844
+stage4.metrics[4].MAE,0.5303
+stage4.metrics[4].RMSE,0.7156
+stage4.metrics[4].R2,0.4937
+stage4.metrics[4].MAPE_%,9.163
+stage4.metrics[5].model,Mean baseline
+stage4.metrics[5].cv_RMSE,0.9675
+stage4.metrics[5].MAE,0.7826
+stage4.metrics[5].RMSE,1.0057
+stage4.metrics[5].R2,-0.0001
+stage4.metrics[5].MAPE_%,13.479
+stage4.importance[0].attribute,members
+stage4.importance[0].importance,0.3362
+stage4.importance[0].rank,1
+stage4.importance[0].cumulative,0.3362
+stage4.importance[1].attribute,members_log
+stage4.importance[1].importance,0.3092
+stage4.importance[1].rank,2
+stage4.importance[1].cumulative,0.6454
+stage4.importance[2].attribute,members_per_episode
+stage4.importance[2].importance,0.096
+stage4.importance[2].rank,3
+stage4.importance[2].cumulative,0.7414
+stage4.importance[3].attribute,primary_genre
+stage4.importance[3].importance,0.0787
+stage4.importance[3].rank,4
+stage4.importance[3].cumulative,0.8201
+stage4.importance[4].attribute,type
+stage4.importance[4].importance,0.0512
+stage4.importance[4].rank,5
+stage4.importance[4].cumulative,0.8713
+stage4.importance[5].attribute,genre_count
+stage4.importance[5].importance,0.0374
+stage4.importance[5].rank,6
+stage4.importance[5].cumulative,0.9087
+stage4.importance[6].attribute,episodes
+stage4.importance[6].importance,0.0299
+stage4.importance[6].rank,7
+stage4.importance[6].cumulative,0.9386
+stage4.importance[7].attribute,episodes_log
+stage4.importance[7].importance,0.0296
+stage4.importance[7].rank,8
+stage4.importance[7].cumulative,0.9682
+stage4.importance[8].attribute,is_shounen
+stage4.importance[8].importance,0.0115
+stage4.importance[8].rank,9
+stage4.importance[8].cumulative,0.9797
+stage4.importance[9].attribute,is_multi_genre
+stage4.importance[9].importance,0.0068
+stage4.importance[9].rank,10
+stage4.importance[9].cumulative,0.9865
 stage5.anime.k,4
 stage5.anime.why,"elbow(knee)=4, silhouette-max=5"
 stage5.anime.rows,12294
