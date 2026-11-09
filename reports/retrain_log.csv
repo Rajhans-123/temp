@@ -3,3 +3,4 @@ run_at,mode,selected,fetched,changed,failed,skipped,stages,stages_ok,duration_s,
 2026-10-19T08:15:33Z,"sync(stale=7d,limit=500) | rebuild:anime-only (no ratings.csv)",500,498,498,2,False,2 3 4 5 6,4 5,321.8,BLEND 0.42*RF + 0.58*GB,0.6531,47153,7a4cc0f
 2026-10-26T08:17:04Z,"sync(stale=7d,limit=500) | rebuild:anime-only (no ratings.csv)",500,500,500,0,False,2 3 4 5 6,4 5,300.1,BLEND 0.42*RF + 0.58*GB,0.6531,47153,b04eb13
 2026-11-02T10:15:43Z,"sync(stale=7d,limit=500) | rebuild:anime-only (no ratings.csv)",500,500,499,0,False,2 3 4 5 6,4 5,298.5,BLEND 0.42*RF + 0.58*GB,0.6531,47153,ad22ea5
+2026-11-09T10:35:12Z,"sync(stale=7d,limit=500) | rebuild:anime-only (no ratings.csv)",500,500,499,0,False,2 3 4 5 6,4 5,320.3,BLEND 0.42*RF + 0.58*GB,0.6531,47153,a84d3c1
